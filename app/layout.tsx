@@ -1,40 +1,37 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
-import { ThemeProvider } from "next-themes";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { logout } from "./login/actions";
 import "./globals.css";
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : "http://localhost:3000";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(defaultUrl),
-  title: "Next.js and Supabase Starter Kit",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  title: "Interview Prep",
+  description: "JavaScript interview practice",
 };
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  display: "swap",
-  subsets: ["latin"],
-});
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+    <html lang="en" data-theme="light">
+      <body className="min-h-screen bg-base-200">
+        <nav className="navbar bg-base-100 shadow-sm px-2 sm:px-4">
+          <div className="flex-1">
+            <Link href="/syllabus" className="btn btn-ghost text-lg px-2">Interview Prep</Link>
+          </div>
+          {data?.claims && (
+            <div className="flex items-center gap-1">
+              <Link href="/syllabus" className="btn btn-ghost btn-sm">Syllabus</Link>
+              <Link href="/mistakes" className="btn btn-ghost btn-sm hidden sm:inline-flex">Mistakes</Link>
+              <Link href="/history" className="btn btn-ghost btn-sm hidden sm:inline-flex">History</Link>
+              <form action={logout}>
+                <button className="btn btn-outline btn-sm">Log out</button>
+              </form>
+            </div>
+          )}
+        </nav>
+        <main className="max-w-3xl mx-auto p-4">{children}</main>
       </body>
     </html>
   );
