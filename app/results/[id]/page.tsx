@@ -39,7 +39,7 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
       </div>
 
       {items.map(({ question: q, response, is_correct }, n) => (
-        <div key={q.id} className={`card bg-base-100 shadow border-l-4 ${is_correct ? "border-success" : "border-error"}`}>
+        <div key={q.id} className="card bg-base-100 shadow">
           <div className="card-body p-4 sm:p-6 gap-2">
             <div className="flex justify-between gap-2">
               <span className="text-sm text-base-content/60">
