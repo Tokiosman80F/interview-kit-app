@@ -64,10 +64,18 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
               {response ? <RichText text={response} /> : <em>no answer</em>}
             </p>
             {!is_correct && (
-              <p>
-                <span className="text-base-content/60">Correct answer: </span>
-                <RichText text={q.correct_answer ?? ""} />
-              </p>
+              <>
+                <p>
+                  <span className="text-base-content/60">Correct answer: </span>
+                  <RichText text={q.correct_answer ?? ""} />
+                </p>
+                {q.explanation && (
+                  <p className="bg-base-200 rounded-box p-3">
+                    <span className="font-semibold">Why: </span>
+                    <RichText text={q.explanation} />
+                  </p>
+                )}
+              </>
             )}
           </div>
         </div>

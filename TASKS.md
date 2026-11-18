@@ -130,6 +130,13 @@ Done when: results match the answers given.
 - [x] Lint, test and build pass.
 - [x] Give the owner this checklist to try: log in; open the syllabus; open topic 1 and write a note; reload and see the note; take the quiz; reload in the middle; finish; read the results; see the score on the syllabus page; log out.
 
+### 1.15 Owner feedback
+
+- [x] Fix: the first click on Next or Finish after typing an answer was lost.
+- [x] "I don't know" option on multiple choice and output questions (scores 0).
+- [x] `explanation` for every multiple choice and output question, shown on the results page for wrong answers (new migration).
+- [x] Cheat sheet on the topic page: the key points of the topic's written questions.
+
 **STOP. Version 1 is done. Wait for the owner.**
 
 ---

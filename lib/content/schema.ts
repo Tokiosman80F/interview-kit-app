@@ -42,6 +42,7 @@ export const questionSchema = z.discriminatedUnion("type", [
       type: z.literal("mcq"),
       options: z.array(z.string().min(1)).min(3).max(5),
       correct_answer: z.string(),
+      explanation: z.string().min(1),
     })
     .refine((q) => q.options.includes(q.correct_answer), {
       message: "correct_answer must be one of the options",
@@ -50,7 +51,12 @@ export const questionSchema = z.discriminatedUnion("type", [
       message: "options must be unique",
     }),
   // prompt is the code snippet; correct_answer is exactly what it prints.
-  z.object({ ...base, type: z.literal("output"), correct_answer: z.string().min(1) }),
+  z.object({
+    ...base,
+    type: z.literal("output"),
+    correct_answer: z.string().min(1),
+    explanation: z.string().min(1),
+  }),
   // correct_answer is a short model answer.
   z.object({
     ...base,

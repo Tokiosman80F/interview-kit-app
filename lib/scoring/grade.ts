@@ -1,5 +1,8 @@
 // Pure grading functions. Every question scores between 0 and 1.
 
+// An honest "I don't know" answer. It never matches, so it scores 0.
+export const DONT_KNOW = "I don't know";
+
 export function normalizeOutput(text: string): string {
   return text.trim().replace(/\s+/g, " ");
 }

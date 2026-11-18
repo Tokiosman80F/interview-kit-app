@@ -61,7 +61,7 @@ scripts/seed.ts          loads content/ into Supabase
 | --------------- | --------------------------------------------------------------------------------------- |
 | `/`             | Dashboard: today's task, current level, streak, days to next review, top 5 weak topics  |
 | `/syllabus`     | Levels and topics with status: locked, not started, studied, quiz score                 |
-| `/topic/[id]`   | Interview question, notes box (autosave), javascript.info link, quiz and coding buttons |
+| `/topic/[id]`   | Interview question, notes box (autosave), key-points cheat sheet (closed by default), javascript.info link, quiz and coding buttons |
 | `/test/[id]`    | One page for topic quiz, level exam and review exam. One question at a time, timer      |
 | `/results/[id]` | Score, each answer with feedback and model answer, or "waiting for grading"             |
 | `/mistakes`     | Every wrong answer, filterable by level and topic                                       |
@@ -77,7 +77,7 @@ Seven tables. Anything that can be calculated (unlocked levels, weak topics, str
 | `tracks`    | id, name                                                                                                                                                                                     |
 | `levels`    | id, track_id, number, title                                                                                                                                                                  |
 | `topics`    | id, level_id, position, title, interview_question, reference_url                                                                                                                             |
-| `questions` | id, topic_id, type (`mcq`, `output`, `written`, `coding`), difficulty (`easy`, `medium`, `hard`), prompt, options (json), correct_answer, key_points (json), test_cases (json), starter_code |
+| `questions` | id, topic_id, type (`mcq`, `output`, `written`, `coding`), difficulty (`easy`, `medium`, `hard`), prompt, options (json), correct_answer, explanation, key_points (json), test_cases (json), starter_code |
 | `notes`     | topic_id, body, updated_at                                                                                                                                                                   |
 | `tests`     | id, kind (`topic_quiz`, `level_exam`, `review`), topic_id, level_id, started_at, finished_at, score, status (`in_progress`, `waiting_for_grading`, `graded`)                                 |
 | `answers`   | id, test_id, question_id, response, is_correct, score, feedback (json), graded_by (`gemini`, `groq`, `app`)                                                                                  |
@@ -89,7 +89,7 @@ Seven tables. Anything that can be calculated (unlocked levels, weak topics, str
 ## Question bank
 
 - Source of truth is `content/questions/level-N.json`, committed to git. The database is a copy loaded by `npm run seed`, so nothing important lives only in Supabase (free projects pause after a week of inactivity).
-- Per topic: 15 questions. 9 multiple choice (3 easy, 3 medium, 3 hard), 3 output prediction and 3 written (1 easy, 1 medium, 1 hard each). Written questions have 3 to 5 key points.
+- Per topic: 15 questions. 9 multiple choice (3 easy, 3 medium, 3 hard), 3 output prediction and 3 written (1 easy, 1 medium, 1 hard each). Written questions have 3 to 5 key points. Multiple choice and output questions have a 1 to 2 sentence `explanation`, shown on the results page when the answer is wrong.
 - Coding questions come from the syllabus coding ladder (30 functions), each with starter code and test cases.
 - Validate every file with a Zod schema in the seed script. Fail loudly on invalid data.
 - When asked to generate questions for a level, write them to the JSON file only. The owner spot-checks them before seeding.
@@ -112,6 +112,7 @@ Seven tables. Anything that can be calculated (unlocked levels, weak topics, str
 All of this lives in `lib/scoring` as pure functions with Vitest tests.
 
 - Every question has equal weight. Test score = average of question scores, as a percentage.
+- Multiple choice and output questions offer "I don't know" (`DONT_KNOW` in `lib/scoring`). It scores 0, so an honest gap shows up as a weak spot instead of a lucky guess.
 - Multiple choice: 1 or 0.
 - Output prediction: 1 if the answer matches the stored output after trimming and collapsing whitespace, else 0.
 - Written: AI score from 0 to 10, divided by 10.

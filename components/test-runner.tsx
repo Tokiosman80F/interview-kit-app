@@ -4,8 +4,9 @@ import { useState, useTransition } from "react";
 import { saveAnswer, finishTest } from "@/app/test/[id]/actions";
 import { CodeBlock, RichText } from "@/components/rich-text";
 import type { QuizQuestion } from "@/lib/data";
+import { DONT_KNOW } from "@/lib/scoring/grade";
 
-type Question = Omit<QuizQuestion, "correct_answer">;
+type Question = Omit<QuizQuestion, "correct_answer" | "explanation">;
 
 export function TestRunner({
   testId,
@@ -46,9 +47,16 @@ export function TestRunner({
     });
   }
 
+  // Background saves stay outside the transition so they never disable the
+  // Next or Finish button and swallow a click.
+  function saveInBackground(i: number, value: string) {
+    setError("");
+    save(i, value).catch(() => setError("Could not save. Check your connection and try again."));
+  }
+
   function choose(value: string) {
     setResponses((r) => r.map((x, j) => (j === index ? value : x)));
-    run(() => save(index, value));
+    saveInBackground(index, value);
   }
 
   function type(value: string) {
@@ -96,8 +104,11 @@ export function TestRunner({
                 placeholder="Exactly what is printed. Separate lines with a space."
                 value={responses[index]}
                 onChange={(e) => type(e.target.value)}
-                onBlur={() => run(() => save(index, responses[index]))}
+                onBlur={() => saveInBackground(index, responses[index])}
               />
+              <button type="button" className="btn btn-ghost btn-sm self-start" onClick={() => choose(DONT_KNOW)}>
+                {DONT_KNOW}
+              </button>
             </>
           ) : (
             <>
@@ -105,7 +116,7 @@ export function TestRunner({
                 <RichText text={q.prompt} />
               </div>
               <div className="flex flex-col gap-2">
-                {(q.options ?? []).map((opt) => (
+                {[...(q.options ?? []), DONT_KNOW].map((opt) => (
                   <label
                     key={opt}
                     className="flex gap-3 items-start cursor-pointer rounded-box border border-base-300 p-3 hover:bg-base-200"

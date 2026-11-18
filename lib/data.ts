@@ -24,4 +24,5 @@ export type QuizQuestion = {
   prompt: string;
   options: string[] | null;
   correct_answer: string | null;
+  explanation: string | null;
 };

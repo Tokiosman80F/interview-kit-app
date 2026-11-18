@@ -9,12 +9,15 @@ import { startQuiz } from "./actions";
 export default async function TopicPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
-  const [topics, topicRes, noteRes, countRes] = await Promise.all([
+  const [topics, topicRes, noteRes, countRes, writtenRes] = await Promise.all([
     topicsInOrder(supabase),
     supabase.from("topics").select("interview_question, reference_url").eq("id", id).maybeSingle(),
     supabase.from("notes").select("body").eq("topic_id", id).maybeSingle(),
     supabase.from("questions").select("id", { count: "exact", head: true }).eq("topic_id", id),
+    // The cheat sheet is the key points of the topic's written questions.
+    supabase.from("questions").select("key_points").eq("topic_id", id).eq("type", "written").order("id"),
   ]);
+  const keyPoints = (writtenRes.data ?? []).flatMap((q) => (q.key_points ?? []) as string[]);
   const i = topics.findIndex((t) => t.id === id);
   if (i === -1 || !topicRes.data) notFound();
   const topic = topics[i];
@@ -52,6 +55,22 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
           <NotesBox topicId={id} initial={noteRes.data?.body ?? ""} />
         </div>
       </div>
+
+      {keyPoints.length > 0 && (
+        // Closed by default, so you answer the interview question before peeking.
+        <details className="collapse collapse-arrow bg-base-100 shadow">
+          <summary className="collapse-title font-semibold">Cheat sheet: key points to remember</summary>
+          <div className="collapse-content">
+            <ul className="list-disc pl-5 flex flex-col gap-1">
+              {keyPoints.map((p) => (
+                <li key={p}>
+                  <RichText text={p} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </details>
+      )}
 
       {countRes.count ? (
         <form action={startQuiz.bind(null, id)}>

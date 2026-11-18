@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { gradeMcq, gradeOutput, normalizeOutput, testScore } from "./grade";
+import { DONT_KNOW, gradeMcq, gradeOutput, normalizeOutput, testScore } from "./grade";
 
 describe("gradeMcq", () => {
   it("scores 1 only for the exact correct option", () => {
@@ -21,6 +21,13 @@ describe("gradeOutput", () => {
   it("scores an empty or missing answer as 0", () => {
     expect(gradeOutput(null, "x")).toBe(0);
     expect(gradeOutput("   ", "x")).toBe(0);
+  });
+});
+
+describe("I don't know", () => {
+  it("scores 0 for multiple choice and output", () => {
+    expect(gradeMcq(DONT_KNOW, "b")).toBe(0);
+    expect(gradeOutput(DONT_KNOW, "1 2")).toBe(0);
   });
 });
 

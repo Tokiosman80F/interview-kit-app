@@ -66,6 +66,7 @@ await upsert(
     prompt: q.prompt,
     options: q.type === "mcq" ? q.options : null,
     correct_answer: q.correct_answer,
+    explanation: q.type === "written" ? null : q.explanation,
     key_points: q.type === "written" ? q.key_points : null,
     test_cases: null,
     starter_code: null,
