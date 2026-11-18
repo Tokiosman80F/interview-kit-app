@@ -32,19 +32,19 @@ Done when: `npm run dev` shows a daisyUI-styled page, and lint, test and build p
 
 ### 1.2 Supabase project (OWNER)
 
-- [ ] **OWNER:** Create a Supabase project on the free plan.
-- [ ] **OWNER:** In Authentication settings, turn off new sign-ups. Create the one user account (email and password).
-- [ ] **OWNER:** Put the project URL, anon key and service role key into `.env.local`.
-- [ ] Explain to the owner, in a few short steps, where each of these settings is in the Supabase dashboard.
+- [x] **OWNER:** Create a Supabase project on the free plan.
+- [x] **OWNER:** In Authentication settings, turn off new sign-ups. Create the one user account (email and password).
+- [x] **OWNER:** Put the project URL, anon key and service role key into `.env.local`.
+- [x] Explain to the owner, in a few short steps, where each of these settings is in the Supabase dashboard.
 
 Done when: the owner confirms the keys are in `.env.local`.
 
 ### 1.3 Database
 
-- [ ] Write the first migration with all seven tables from CLAUDE.md, with foreign keys, `not null` where it makes sense, and check constraints for the enum-like columns.
-- [ ] Add indexes on foreign keys and on `answers(question_id)`, `tests(finished_at)`.
-- [ ] Turn on Row Level Security for every table. Policies: `authenticated` can read everything; can insert and update `notes`, `tests` and `answers`; content tables are read-only.
-- [ ] Apply the migration to the Supabase project. If the Supabase CLI is needed, explain the one or two commands to the owner.
+- [x] Write the first migration with all seven tables from CLAUDE.md, with foreign keys, `not null` where it makes sense, and check constraints for the enum-like columns.
+- [x] Add indexes on foreign keys and on `answers(question_id)`, `tests(finished_at)`.
+- [x] Turn on Row Level Security for every table. Policies: `authenticated` can read everything; can insert and update `notes`, `tests` and `answers`; content tables are read-only.
+- [x] Apply the migration to the Supabase project. If the Supabase CLI is needed, explain the one or two commands to the owner.
 
 Done when: the tables exist in Supabase with RLS on, and an anonymous request cannot read any table.
 
@@ -74,8 +74,8 @@ Done when: the file validates, every output snippet was run, and the owner has a
 
 ### 1.7 Seed script
 
-- [ ] Write `scripts/seed.ts` and the `seed` script: validate `content/` with Zod, then upsert tracks, levels, topics and questions using the service role key. Running it twice must not duplicate anything.
-- [ ] Print a short summary: counts per level and per question type.
+- [x] Write `scripts/seed.ts` and the `seed` script: validate `content/` with Zod, then upsert tracks, levels, topics and questions using the service role key. Running it twice must not duplicate anything.
+- [x] Print a short summary: counts per level and per question type.
 
 Done when: `npm run seed` loads Level 1 and running it again changes nothing.
 
