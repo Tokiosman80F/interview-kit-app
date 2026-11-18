@@ -50,10 +50,10 @@ Done when: the tables exist in Supabase with RLS on, and an anonymous request ca
 
 ### 1.4 Supabase clients and login
 
-- [ ] Add server and browser Supabase clients in `lib/supabase`, following the current Supabase guide for Next.js App Router.
-- [ ] Build `/login` with a daisyUI card: email, password, error message.
-- [ ] Protect every route except `/login`, following the current Next.js and Supabase docs (middleware or proxy, whichever the current versions use).
-- [ ] Add a logout button in the navbar.
+- [x] Add server and browser Supabase clients in `lib/supabase`, following the current Supabase guide for Next.js App Router.
+- [x] Build `/login` with a daisyUI card: email, password, error message.
+- [x] Protect every route except `/login`, following the current Next.js and Supabase docs (middleware or proxy, whichever the current versions use).
+- [x] Add a logout button in the navbar.
 
 Done when: logged out, every page redirects to `/login`; logged in, pages load; logout works.
 
@@ -81,23 +81,23 @@ Done when: `npm run seed` loads Level 1 and running it again changes nothing.
 
 ### 1.8 Layout
 
-- [ ] Root layout with a daisyUI navbar: Syllabus, Mistakes, History (the last two can show "Coming in a later version" for now), logout.
-- [ ] Responsive: usable on a phone.
+- [x] Root layout with a daisyUI navbar: Syllabus, Mistakes, History (the last two can show "Coming in a later version" for now), logout.
+- [x] Responsive: usable on a phone.
 
 Done when: every page shares the layout and looks fine at phone width.
 
 ### 1.9 Syllabus page
 
-- [ ] `/syllabus`: every level as a section, every topic as a row with its status: not started, studied (has notes or a quiz), or quiz score (best and last).
-- [ ] Levels without questions in the database show "Questions not added yet". Level unlocking comes in version 4; for now every level with questions is open.
-- [ ] `/` redirects to `/syllabus` until the dashboard exists in version 5.
+- [x] `/syllabus`: every level as a section, every topic as a row with its status: not started, studied (has notes or a quiz), or quiz score (best and last).
+- [x] Levels without questions in the database show "Questions not added yet". Level unlocking comes in version 4; for now every level with questions is open.
+- [x] `/` redirects to `/syllabus` until the dashboard exists in version 5.
 
 Done when: the page shows Level 1 topics with correct statuses after taking a quiz.
 
 ### 1.10 Topic page
 
-- [ ] `/topic/[id]`: title, the interview question in a highlighted card, a link to the reference chapter, a "Start quiz" button, and links to the previous and next topic.
-- [ ] Notes box that saves automatically about 1 second after the owner stops typing, with a small "Saved" indicator.
+- [x] `/topic/[id]`: title, the interview question in a highlighted card, a link to the reference chapter, a "Start quiz" button, and links to the previous and next topic.
+- [x] Notes box that saves automatically about 1 second after the owner stops typing, with a small "Saved" indicator.
 
 Done when: notes survive a page reload, and the quiz button starts a quiz for that topic.
 
@@ -111,24 +111,24 @@ Done when: the tests pass.
 
 ### 1.12 Test page
 
-- [ ] Starting a quiz creates a `tests` row (`topic_quiz`, `in_progress`) and its question list.
-- [ ] `/test/[id]`: one question at a time with a progress bar, previous and next buttons, and a "Finish" button on the last question. Multiple choice uses radio options; output uses a text input.
-- [ ] Answers are saved as the owner goes, so a reload does not lose them.
-- [ ] Finishing grades every answer with `lib/scoring`, saves `answers` (`graded_by = app`) and the test score, sets status `graded`, and opens the results page.
+- [x] Starting a quiz creates a `tests` row (`topic_quiz`, `in_progress`) and its question list.
+- [x] `/test/[id]`: one question at a time with a progress bar, previous and next buttons, and a "Finish" button on the last question. Multiple choice uses radio options; output uses a text input.
+- [x] Answers are saved as the owner goes, so a reload does not lose them.
+- [x] Finishing grades every answer with `lib/scoring`, saves `answers` (`graded_by = app`) and the test score, sets status `graded`, and opens the results page.
 
 Done when: a full quiz can be taken, reloaded halfway, and finished.
 
 ### 1.13 Results page
 
-- [ ] `/results/[id]`: the score at the top, then every question with the owner's answer, the correct answer, and right or wrong.
-- [ ] A link back to the topic and to the next topic.
+- [x] `/results/[id]`: the score at the top, then every question with the owner's answer, the correct answer, and right or wrong.
+- [x] A link back to the topic and to the next topic.
 
 Done when: results match the answers given.
 
 ### 1.14 Version 1 check
 
-- [ ] Lint, test and build pass.
-- [ ] Give the owner this checklist to try: log in; open the syllabus; open topic 1 and write a note; reload and see the note; take the quiz; reload in the middle; finish; read the results; see the score on the syllabus page; log out.
+- [x] Lint, test and build pass.
+- [x] Give the owner this checklist to try: log in; open the syllabus; open topic 1 and write a note; reload and see the note; take the quiz; reload in the middle; finish; read the results; see the score on the syllabus page; log out.
 
 **STOP. Version 1 is done. Wait for the owner.**
 
