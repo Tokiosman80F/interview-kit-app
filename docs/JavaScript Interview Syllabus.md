@@ -165,3 +165,25 @@ Rules for every function: no AI, no looking it up, a 20 minute timer. Then test 
 - [ ] 30\. A small `createStore` like Redux, with `getState`, `dispatch` and `subscribe`
 
 Number 30 connects to your Redux course: if you want, write it earlier, right after you finish that course in weeks 4 and 5 of your roadmap.
+
+## Coding ladder part 2: 15 DSA problems for frontend
+
+Frontend interviews focus on JavaScript utility functions and UI building more than algorithm puzzles, so this list is short, easy and medium only, and each problem is tied to something frontend developers do. Start it after number 30 (weeks 17 to 20), with the same rules: no AI, a 20 minute timer, at least three test cases. LRU cache and flatten are left out because the ladder above already has them.
+
+| # | LeetCode problem | Pattern | Where frontend uses it |
+| --- | --- | --- | --- |
+| 31 | [1. Two Sum](https://leetcode.com/problems/two-sum/) | Hash map | Fast lookups by id instead of nested loops |
+| 32 | [242. Valid Anagram](https://leetcode.com/problems/valid-anagram/) | Counting with a map | Comparing and grouping data |
+| 33 | [49. Group Anagrams](https://leetcode.com/problems/group-anagrams/) | Hash map grouping | Grouping list items for a UI |
+| 34 | [20. Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) | Stack | Matching HTML or JSX tags, brackets in editors |
+| 35 | [155. Min Stack](https://leetcode.com/problems/min-stack/) | Stack | Undo and redo history |
+| 36 | [3. Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) | Sliding window | Text input handling, windowed lists |
+| 37 | [704. Binary Search](https://leetcode.com/problems/binary-search/) | Binary search | Finding the visible row in a virtualized list |
+| 38 | [56. Merge Intervals](https://leetcode.com/problems/merge-intervals/) | Sort and merge | Calendar events, overlapping time slots |
+| 39 | [347. Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) | Counting and sorting | "Most used" tags, search suggestions |
+| 40 | [104. Maximum Depth of Binary Tree](https://leetcode.com/problems/maximum-depth-of-binary-tree/) | Tree DFS | Nesting depth of a DOM tree |
+| 41 | [102. Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/) | Tree BFS | Walking the DOM level by level |
+| 42 | [100. Same Tree](https://leetcode.com/problems/same-tree/) | Tree comparison | The idea behind virtual DOM diffing |
+| 43 | [236. Lowest Common Ancestor of a Binary Tree](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/) | Tree recursion | Closest shared parent of two DOM nodes |
+| 44 | [208. Implement Trie](https://leetcode.com/problems/implement-trie-prefix-tree/) | Trie | Autocomplete in a search box |
+| 45 | [207. Course Schedule](https://leetcode.com/problems/course-schedule/) | Graph, topological sort | Dependency order in bundlers and task runners |
