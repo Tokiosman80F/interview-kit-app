@@ -217,11 +217,11 @@ Goal: one place that says what to do today and shows weak spots; the app online.
 Do one level at a time, about a week before the owner reaches it in the syllabus. Ask the owner which level is next.
 
 - [x] Level 2 question bank, owner spot-check, seed
-- [ ] Level 3 question bank, owner spot-check, seed
-- [ ] Level 4 question bank, owner spot-check, seed
-- [ ] Level 5 question bank, owner spot-check, seed
-- [ ] Level 6 question bank, owner spot-check, seed
-- [ ] Level 7 question bank, owner spot-check, seed
+- [x] Level 3 question bank, owner spot-check, seed
+- [x] Level 4 question bank, owner spot-check, seed
+- [x] Level 5 question bank, owner spot-check, seed
+- [x] Level 6 question bank, owner spot-check, seed
+- [x] Level 7 question bank, owner spot-check, seed
 - [ ] Medium coding functions (11 to 23), owner spot-check, seed
 - [ ] Hard coding functions (24 to 30), owner spot-check, seed
 - [ ] Coding ladder part 2: the 15 DSA problems (31 to 45) from the syllabus, owner spot-check, seed. Tree problems need a small helper in the starter code that builds a tree from an array, so test cases stay plain JSON
