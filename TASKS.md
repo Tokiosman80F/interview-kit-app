@@ -216,7 +216,7 @@ Goal: one place that says what to do today and shows weak spots; the app online.
 
 Do one level at a time, about a week before the owner reaches it in the syllabus. Ask the owner which level is next.
 
-- [ ] Level 2 question bank, owner spot-check, seed
+- [x] Level 2 question bank, owner spot-check, seed
 - [ ] Level 3 question bank, owner spot-check, seed
 - [ ] Level 4 question bank, owner spot-check, seed
 - [ ] Level 5 question bank, owner spot-check, seed
