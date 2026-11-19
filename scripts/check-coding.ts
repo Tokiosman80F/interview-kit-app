@@ -5,6 +5,10 @@ import { readFileSync } from "node:fs";
 import { codingFileSchema } from "../lib/content/schema.ts";
 import { runTest } from "../lib/runner/run.ts";
 
+// Running the empty starter code leaves rejected promises nobody handles,
+// like the input of `promiseAll([Promise.reject(...)])`. They are expected.
+process.on("unhandledRejection", () => {});
+
 const parsed = codingFileSchema.safeParse(JSON.parse(readFileSync("content/coding.json", "utf8")));
 if (!parsed.success) {
   console.error(parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("\n"));
