@@ -1,0 +1,170 @@
+{
+  "questions": [
+    {
+      "id": "code-01",
+      "topic_id": "js-13",
+      "difficulty": "easy",
+      "title": "Write your own `map`",
+      "prompt": "Write `map(array, callback)` without using `Array.prototype.map`. Call `callback(item, index, array)` for every item and return a new array of the results. Do not change the original array.",
+      "starter_code": "function map(array, callback) {\n  // Return a new array of callback(item, index, array) for each item.\n}\n",
+      "solution": "function map(array, callback) {\n  const result = [];\n  for (let i = 0; i < array.length; i++) {\n    result.push(callback(array[i], i, array));\n  }\n  return result;\n}\n",
+      "test_cases": [
+        { "name": "doubles numbers", "call": "map([1, 2, 3], (n) => n * 2)", "expected": [2, 4, 6] },
+        { "name": "empty array", "call": "map([], (n) => n)", "expected": [] },
+        { "name": "passes the index", "call": "map([\"a\", \"b\"], (x, i) => x + i)", "expected": ["a0", "b1"] },
+        { "name": "passes the array", "call": "map([1, 2], (x, i, arr) => arr.length)", "expected": [2, 2] },
+        { "name": "does not change the original", "call": "(() => { const a = [1, 2]; map(a, (n) => n * 10); return a; })()", "expected": [1, 2] },
+        { "name": "does not use the built-in map", "call": "(() => { const built = Array.prototype.map; Array.prototype.map = () => { throw new Error(\"used the built-in map\"); }; try { return map([1], (n) => n + 1); } finally { Array.prototype.map = built; } })()", "expected": [2] }
+      ]
+    },
+    {
+      "id": "code-02",
+      "topic_id": "js-13",
+      "difficulty": "easy",
+      "title": "Write your own `filter`",
+      "prompt": "Write `filter(array, callback)` without using `Array.prototype.filter`. Return a new array with the items for which `callback(item, index, array)` returns a truthy value. Do not change the original array.",
+      "starter_code": "function filter(array, callback) {\n  // Return a new array of the items where callback(item, index, array) is truthy.\n}\n",
+      "solution": "function filter(array, callback) {\n  const result = [];\n  for (let i = 0; i < array.length; i++) {\n    if (callback(array[i], i, array)) result.push(array[i]);\n  }\n  return result;\n}\n",
+      "test_cases": [
+        { "name": "keeps even numbers", "call": "filter([1, 2, 3, 4], (n) => n % 2 === 0)", "expected": [2, 4] },
+        { "name": "empty array", "call": "filter([], () => true)", "expected": [] },
+        { "name": "nothing matches", "call": "filter([1, 2], () => false)", "expected": [] },
+        { "name": "uses truthy values, not just true", "call": "filter([0, 1, \"\", \"a\", null], (x) => x)", "expected": [1, "a"] },
+        { "name": "passes the index", "call": "filter([\"a\", \"b\", \"c\"], (x, i) => i !== 1)", "expected": ["a", "c"] },
+        { "name": "does not use the built-in filter", "call": "(() => { const built = Array.prototype.filter; Array.prototype.filter = () => { throw new Error(\"used the built-in filter\"); }; try { return filter([1, 2], (n) => n > 1); } finally { Array.prototype.filter = built; } })()", "expected": [2] }
+      ]
+    },
+    {
+      "id": "code-03",
+      "topic_id": "js-13",
+      "difficulty": "easy",
+      "title": "Write your own `reduce`",
+      "prompt": "Write `reduce(array, callback, initial)` without using `Array.prototype.reduce`. Call `callback(accumulator, item, index, array)` for each item. If no `initial` is given, start with the first item. If the array is empty and there is no `initial`, throw a `TypeError`.",
+      "starter_code": "function reduce(array, callback, initial) {\n  // Combine the items into one value with callback(acc, item, index, array).\n}\n",
+      "solution": "function reduce(array, callback, ...rest) {\n  let i = 0;\n  let acc;\n  if (rest.length > 0) {\n    acc = rest[0];\n  } else {\n    if (array.length === 0) throw new TypeError(\"Reduce of empty array with no initial value\");\n    acc = array[0];\n    i = 1;\n  }\n  for (; i < array.length; i++) acc = callback(acc, array[i], i, array);\n  return acc;\n}\n",
+      "test_cases": [
+        { "name": "sums with a starting value", "call": "reduce([1, 2, 3], (sum, n) => sum + n, 10)", "expected": 16 },
+        { "name": "sums without a starting value", "call": "reduce([1, 2, 3], (sum, n) => sum + n)", "expected": 6 },
+        { "name": "empty array with a starting value", "call": "reduce([], (sum, n) => sum + n, 0)", "expected": 0 },
+        { "name": "empty array without a starting value throws a TypeError", "call": "(() => { try { reduce([], (a, b) => a + b); return \"no error\"; } catch (e) { return e instanceof TypeError; } })()", "expected": true },
+        { "name": "builds an object", "call": "reduce([\"a\", \"b\"], (obj, key, i) => ({ ...obj, [key]: i }), {})", "expected": { "a": 0, "b": 1 } },
+        { "name": "does not use the built-in reduce", "call": "(() => { const built = Array.prototype.reduce; Array.prototype.reduce = () => { throw new Error(\"used the built-in reduce\"); }; try { return reduce([1, 2], (a, b) => a * b, 3); } finally { Array.prototype.reduce = built; } })()", "expected": 6 }
+      ]
+    },
+    {
+      "id": "code-04",
+      "topic_id": "js-20",
+      "difficulty": "easy",
+      "title": "`groupBy(items, key)`",
+      "prompt": "Write `groupBy(items, key)`. It takes an array of objects and a property name, and returns an object where each key is a value of that property and each value is an array of the matching items, in their original order.",
+      "starter_code": "function groupBy(items, key) {\n  // Return { [value of item[key]]: [items with that value] }.\n}\n",
+      "solution": "function groupBy(items, key) {\n  const groups = {};\n  for (const item of items) {\n    const value = item[key];\n    if (!groups[value]) groups[value] = [];\n    groups[value].push(item);\n  }\n  return groups;\n}\n",
+      "test_cases": [
+        { "name": "groups by a property", "call": "groupBy([{ type: \"fruit\", name: \"apple\" }, { type: \"veg\", name: \"carrot\" }, { type: \"fruit\", name: \"pear\" }], \"type\")", "expected": { "fruit": [{ "type": "fruit", "name": "apple" }, { "type": "fruit", "name": "pear" }], "veg": [{ "type": "veg", "name": "carrot" }] } },
+        { "name": "empty array", "call": "groupBy([], \"type\")", "expected": {} },
+        { "name": "one group", "call": "groupBy([{ a: 1 }, { a: 1 }], \"a\")", "expected": { "1": [{ "a": 1 }, { "a": 1 }] } },
+        { "name": "keeps the original order inside a group", "call": "groupBy([{ g: \"x\", n: 3 }, { g: \"x\", n: 1 }, { g: \"x\", n: 2 }], \"g\").x.map((i) => i.n)", "expected": [3, 1, 2] },
+        { "name": "does not change the items", "call": "(() => { const items = [{ g: \"x\" }]; groupBy(items, \"g\"); return items; })()", "expected": [{ "g": "x" }] }
+      ]
+    },
+    {
+      "id": "code-05",
+      "topic_id": "js-37",
+      "difficulty": "easy",
+      "title": "`unique(array)`",
+      "prompt": "Write `unique(array)`. Return a new array without duplicates, keeping the first time each value appears. Solve it once with a `Set`, then once without one.",
+      "starter_code": "function unique(array) {\n  // Return a new array with each value once, in first-seen order.\n}\n",
+      "solution": "function unique(array) {\n  return [...new Set(array)];\n}\n",
+      "test_cases": [
+        { "name": "removes repeated numbers", "call": "unique([1, 2, 2, 3, 1])", "expected": [1, 2, 3] },
+        { "name": "empty array", "call": "unique([])", "expected": [] },
+        { "name": "strings", "call": "unique([\"js\", \"css\", \"js\"])", "expected": ["js", "css"] },
+        { "name": "keeps first-seen order", "call": "unique([3, 1, 3, 2, 1])", "expected": [3, 1, 2] },
+        { "name": "1 and \"1\" are different", "call": "unique([1, \"1\", 1])", "expected": [1, "1"] },
+        { "name": "does not change the original", "call": "(() => { const a = [1, 1]; unique(a); return a; })()", "expected": [1, 1] }
+      ]
+    },
+    {
+      "id": "code-06",
+      "topic_id": "js-13",
+      "difficulty": "easy",
+      "title": "`chunk(array, size)`",
+      "prompt": "Write `chunk(array, size)`. Split the array into groups of `size` items. The last group holds whatever is left. Do not change the original array.",
+      "starter_code": "function chunk(array, size) {\n  // Return an array of groups, each with up to `size` items.\n}\n",
+      "solution": "function chunk(array, size) {\n  const result = [];\n  for (let i = 0; i < array.length; i += size) {\n    result.push(array.slice(i, i + size));\n  }\n  return result;\n}\n",
+      "test_cases": [
+        { "name": "uneven split", "call": "chunk([1, 2, 3, 4, 5], 2)", "expected": [[1, 2], [3, 4], [5]] },
+        { "name": "empty array", "call": "chunk([], 3)", "expected": [] },
+        { "name": "even split", "call": "chunk([1, 2, 3, 4], 2)", "expected": [[1, 2], [3, 4]] },
+        { "name": "size bigger than the array", "call": "chunk([1, 2], 5)", "expected": [[1, 2]] },
+        { "name": "size 1", "call": "chunk([\"a\", \"b\"], 1)", "expected": [["a"], ["b"]] },
+        { "name": "does not change the original", "call": "(() => { const a = [1, 2, 3]; chunk(a, 2); return a; })()", "expected": [1, 2, 3] }
+      ]
+    },
+    {
+      "id": "code-07",
+      "topic_id": "js-13",
+      "difficulty": "easy",
+      "title": "`flatten(array)`",
+      "prompt": "Write `flatten(array)` without using `Array.prototype.flat`. Return a new array with all nested arrays flattened, at any depth. Tip: get one level working first, then make it work for any depth.",
+      "starter_code": "function flatten(array) {\n  // Return a new array with no nested arrays left.\n}\n",
+      "solution": "function flatten(array) {\n  const result = [];\n  for (const item of array) {\n    if (Array.isArray(item)) result.push(...flatten(item));\n    else result.push(item);\n  }\n  return result;\n}\n",
+      "test_cases": [
+        { "name": "one level", "call": "flatten([1, [2, 3], 4])", "expected": [1, 2, 3, 4] },
+        { "name": "empty array", "call": "flatten([])", "expected": [] },
+        { "name": "any depth", "call": "flatten([1, [2, [3, [4, [5]]]]])", "expected": [1, 2, 3, 4, 5] },
+        { "name": "empty nested arrays", "call": "flatten([[], [[]], [1]])", "expected": [1] },
+        { "name": "does not change the original", "call": "(() => { const a = [1, [2]]; flatten(a); return a; })()", "expected": [1, [2]] },
+        { "name": "does not use the built-in flat", "call": "(() => { const built = Array.prototype.flat; Array.prototype.flat = () => { throw new Error(\"used the built-in flat\"); }; try { return flatten([[1], [2]]); } finally { Array.prototype.flat = built; } })()", "expected": [1, 2] }
+      ]
+    },
+    {
+      "id": "code-08",
+      "topic_id": "js-20",
+      "difficulty": "easy",
+      "title": "`countBy(array)`",
+      "prompt": "Write `countBy(array)`. Return an object that counts how many times each value appears in the array.",
+      "starter_code": "function countBy(array) {\n  // Return { value: number of times it appears }.\n}\n",
+      "solution": "function countBy(array) {\n  const counts = {};\n  for (const value of array) counts[value] = (counts[value] || 0) + 1;\n  return counts;\n}\n",
+      "test_cases": [
+        { "name": "counts strings", "call": "countBy([\"a\", \"b\", \"a\", \"a\"])", "expected": { "a": 3, "b": 1 } },
+        { "name": "empty array", "call": "countBy([])", "expected": {} },
+        { "name": "counts numbers", "call": "countBy([1, 1, 2])", "expected": { "1": 2, "2": 1 } },
+        { "name": "case matters", "call": "countBy([\"A\", \"a\"])", "expected": { "A": 1, "a": 1 } },
+        { "name": "one value", "call": "countBy([\"x\"])", "expected": { "x": 1 } }
+      ]
+    },
+    {
+      "id": "code-09",
+      "topic_id": "js-9",
+      "difficulty": "easy",
+      "title": "`once(fn)`",
+      "prompt": "Write `once(fn)`. It returns a new function that calls `fn` only the first time it is called, with the same arguments and `this`. Every later call returns the result of that first call without calling `fn` again.",
+      "starter_code": "function once(fn) {\n  // Return a function that runs fn only the first time.\n}\n",
+      "solution": "function once(fn) {\n  let called = false;\n  let result;\n  return function (...args) {\n    if (!called) {\n      called = true;\n      result = fn.apply(this, args);\n    }\n    return result;\n  };\n}\n",
+      "test_cases": [
+        { "name": "calls fn only once", "call": "(() => { let n = 0; const f = once(() => ++n); f(); f(); f(); return n; })()", "expected": 1 },
+        { "name": "returns the first result every time", "call": "(() => { const f = once((x) => x * 2); return [f(2), f(5)]; })()", "expected": [4, 4] },
+        { "name": "no arguments", "call": "once(() => 7)()", "expected": 7 },
+        { "name": "fn that returns nothing still runs once", "call": "(() => { let n = 0; const f = once(() => { n++; }); f(); f(); return n; })()", "expected": 1 },
+        { "name": "keeps this", "call": "(() => { const user = { name: \"Ann\", hi: once(function () { return this.name; }) }; return user.hi(); })()", "expected": "Ann" }
+      ]
+    },
+    {
+      "id": "code-10",
+      "topic_id": "js-9",
+      "difficulty": "easy",
+      "title": "`memoize(fn)`",
+      "prompt": "Write `memoize(fn)` for functions that take one argument. It returns a new function that caches the result for each argument, so `fn` runs only once per different argument.",
+      "starter_code": "function memoize(fn) {\n  // Return a function that remembers fn's result for each argument.\n}\n",
+      "solution": "function memoize(fn) {\n  const cache = new Map();\n  return (arg) => {\n    if (!cache.has(arg)) cache.set(arg, fn(arg));\n    return cache.get(arg);\n  };\n}\n",
+      "test_cases": [
+        { "name": "caches the same argument", "call": "(() => { let calls = 0; const square = memoize((n) => { calls++; return n * n; }); return [square(3), square(3), calls]; })()", "expected": [9, 9, 1] },
+        { "name": "different arguments run again", "call": "(() => { let calls = 0; const square = memoize((n) => { calls++; return n * n; }); return [square(2), square(3), calls]; })()", "expected": [4, 9, 2] },
+        { "name": "no arguments", "call": "memoize(() => 5)()", "expected": 5 },
+        { "name": "caches falsy results too", "call": "(() => { let calls = 0; const f = memoize(() => { calls++; return 0; }); f(1); f(1); return calls; })()", "expected": 1 },
+        { "name": "1 and \"1\" are different arguments", "call": "(() => { const f = memoize((x) => typeof x); return [f(1), f(\"1\")]; })()", "expected": ["number", "string"] }
+      ]
+    }
+  ]
+}

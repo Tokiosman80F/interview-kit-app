@@ -9,13 +9,18 @@ import { startQuiz } from "./actions";
 export default async function TopicPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
-  const [topics, topicRes, noteRes, countRes, writtenRes] = await Promise.all([
+  const [topics, topicRes, noteRes, countRes, writtenRes, codingRes] = await Promise.all([
     topicsInOrder(supabase),
     supabase.from("topics").select("interview_question, reference_url").eq("id", id).maybeSingle(),
     supabase.from("notes").select("body").eq("topic_id", id).maybeSingle(),
-    supabase.from("questions").select("id", { count: "exact", head: true }).eq("topic_id", id),
+    supabase
+      .from("questions")
+      .select("id", { count: "exact", head: true })
+      .eq("topic_id", id)
+      .in("type", ["mcq", "output"]),
     // The cheat sheet is the key points of the topic's written questions.
     supabase.from("questions").select("key_points").eq("topic_id", id).eq("type", "written").order("id"),
+    supabase.from("questions").select("id, title").eq("topic_id", id).eq("type", "coding").order("id"),
   ]);
   const keyPoints = (writtenRes.data ?? []).flatMap((q) => (q.key_points ?? []) as string[]);
   const i = topics.findIndex((t) => t.id === id);
@@ -79,6 +84,11 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
       ) : (
         <p className="text-base-content/60">Quiz questions for this topic are not added yet.</p>
       )}
+      {(codingRes.data ?? []).map((c) => (
+        <Link key={c.id} href={`/coding/${c.id}`} className="btn btn-outline btn-block">
+          Coding: <RichText text={c.title} />
+        </Link>
+      ))}
 
       <div className="flex justify-between gap-2">
         {prev ? <Link href={`/topic/${prev.id}`} className="btn btn-ghost btn-sm">← <RichText text={prev.title} /></Link> : <span />}

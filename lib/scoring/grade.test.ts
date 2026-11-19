@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DONT_KNOW, gradeMcq, gradeOutput, normalizeOutput, testScore } from "./grade";
+import { DONT_KNOW, gradeCoding, gradeMcq, gradeOutput, normalizeOutput, testScore } from "./grade";
 
 describe("gradeMcq", () => {
   it("scores 1 only for the exact correct option", () => {
@@ -40,5 +40,16 @@ describe("testScore", () => {
   });
   it("scores a test with zero questions as 0", () => {
     expect(testScore([])).toBe(0);
+  });
+});
+
+describe("gradeCoding", () => {
+  it("is the fraction of test cases passed", () => {
+    expect(gradeCoding([true, true, false, false])).toBe(0.5);
+    expect(gradeCoding([true, true])).toBe(1);
+    expect(gradeCoding([false])).toBe(0);
+  });
+  it("scores a problem with no tests as 0", () => {
+    expect(gradeCoding([])).toBe(0);
   });
 });

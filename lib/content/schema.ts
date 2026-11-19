@@ -68,6 +68,32 @@ export const questionSchema = z.discriminatedUnion("type", [
 
 export type Question = z.infer<typeof questionSchema>;
 
+// content/coding.json: the coding ladder. Each test case is a JavaScript
+// expression run next to the owner's code; its result (awaited if it is a
+// promise) must deep-equal `expected`. `solution` is a reference answer that
+// scripts/check-coding.ts runs against every test.
+export const codingSchema = z.object({
+  id: z.string().regex(/^code-\d{2}$/),
+  topic_id: z.string(),
+  difficulty: z.enum(["easy", "medium", "hard"]),
+  title: z.string().min(1),
+  prompt: z.string().min(1),
+  starter_code: z.string().min(1),
+  solution: z.string().min(1),
+  test_cases: z
+    .array(z.object({ name: z.string().min(1), call: z.string().min(1), expected: z.json() }))
+    .min(4)
+    .max(8),
+});
+
+export type CodingQuestion = z.infer<typeof codingSchema>;
+
+export const codingFileSchema = z
+  .object({ questions: z.array(codingSchema) })
+  .refine((f) => new Set(f.questions.map((q) => q.id)).size === f.questions.length, {
+    message: "duplicate coding question id",
+  });
+
 // Per topic: 9 mcq (3 per difficulty), 3 output and 3 written (1 per difficulty).
 const required: Record<string, number> = {
   "mcq-easy": 3, "mcq-medium": 3, "mcq-hard": 3,

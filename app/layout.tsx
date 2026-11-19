@@ -23,6 +23,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           {data?.claims && (
             <div className="flex items-center gap-1">
               <Link href="/syllabus" className="btn btn-ghost btn-sm">Syllabus</Link>
+              <Link href="/coding" className="btn btn-ghost btn-sm">Coding</Link>
               <Link href="/mistakes" className="btn btn-ghost btn-sm hidden sm:inline-flex">Mistakes</Link>
               <Link href="/history" className="btn btn-ghost btn-sm hidden sm:inline-flex">History</Link>
               <form action={logout}>

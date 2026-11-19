@@ -145,15 +145,15 @@ Done when: results match the answers given.
 
 Goal: on coding days, the owner writes the coding ladder functions in an editor and runs tests in the browser.
 
-- [ ] Add `coding` to the allowed values of `tests.kind` (new migration) and update CLAUDE.md.
-- [ ] Create `content/coding.json` with the 30 coding ladder functions from the syllabus: each with a title, description, difficulty, the closest topic, starter code, and 4 to 8 test cases including an empty input and an edge case. Start with the 10 easy ones; add medium and hard ones before the owner reaches them. Part 2 (the 15 DSA problems, 31 to 45) goes in the same file later, with its LeetCode link.
+- [x] Add `coding` to the allowed values of `tests.kind` (new migration) and update CLAUDE.md.
+- [x] Create `content/coding.json` with the 30 coding ladder functions from the syllabus: each with a title, description, difficulty, the closest topic, starter code, and 4 to 8 test cases including an empty input and an edge case. Start with the 10 easy ones; add medium and hard ones before the owner reaches them. Part 2 (the 15 DSA problems, 31 to 45) goes in the same file later, with its LeetCode link.
 - [ ] **OWNER:** Spot-check the easy functions and their tests.
-- [ ] Extend the seed script and schema to load coding questions.
-- [ ] Web Worker runner in `lib/runner`: runs the owner's code against the test cases, supports async tests, stops after 3 seconds, returns pass or fail with expected and actual values.
-- [ ] Vitest tests for the runner's comparison logic (deep equality, async results, thrown errors).
-- [ ] CodeMirror 6 editor component with JavaScript highlighting and Tab indentation.
-- [ ] Coding page: description, editor with starter code, a 20 minute countdown (warning only, does not block), "Run tests" and "Submit". Submitting saves a `coding` test and its score.
-- [ ] A "Coding ladder" list page showing every coding problem (ladder and part 2) with status, and a link to it in the navbar.
+- [x] Extend the seed script and schema to load coding questions.
+- [x] Web Worker runner in `lib/runner`: runs the owner's code against the test cases, supports async tests, stops after 3 seconds, returns pass or fail with expected and actual values.
+- [x] Vitest tests for the runner's comparison logic (deep equality, async results, thrown errors).
+- [x] CodeMirror 6 editor component with JavaScript highlighting and Tab indentation.
+- [x] Coding page: description, editor with starter code, a 20 minute countdown (warning only, does not block), "Run tests" and "Submit". Submitting saves a `coding` test and its score.
+- [x] A "Coding ladder" list page showing every coding problem (ladder and part 2) with status, and a link to it in the navbar.
 - [ ] Version 2 check: lint, test, build, and an owner checklist (write `map`, run tests, fail one on purpose, submit, see the result, write an infinite loop and see the timeout).
 
 **STOP. Version 2 is done. Wait for the owner.**

@@ -13,7 +13,7 @@ If a feature does not make the owner practise more or show a weak spot, do not b
 
 ## Current version
 
-**Version 1.** Build only what the current version lists, then stop. The owner uses each version for at least a week before asking for the next.
+**Version 2.** Build only what the current version lists, then stop. The owner uses each version for at least a week before asking for the next.
 
 | Version | Scope                                                                                                                              |
 | ------- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -51,6 +51,7 @@ lib/
   runner/                Web Worker code runner (version 2)
 content/questions/       question bank, one JSON file per level: level-1.json, ...
 content/syllabus.json    tracks, levels, topics
+content/coding.json      coding ladder: prompt, starter code, reference solution, test cases
 supabase/migrations/     SQL migrations
 scripts/seed.ts          loads content/ into Supabase
 ```
@@ -63,7 +64,9 @@ scripts/seed.ts          loads content/ into Supabase
 | `/syllabus`     | Levels and topics with status: locked, not started, studied, quiz score                 |
 | `/topic/[id]`   | Interview question, notes box (autosave), key-points cheat sheet (closed by default), javascript.info link, quiz and coding buttons |
 | `/test/[id]`    | One page for topic quiz, level exam and review exam. One question at a time, timer      |
-| `/results/[id]` | Score, each answer with feedback and model answer, or "waiting for grading"             |
+| `/results/[id]` | Score, each answer with feedback and model answer, or "waiting for grading". For coding: tests, your code, model solution |
+| `/coding`       | Coding ladder: every coding problem in order with its best score                        |
+| `/coding/[id]`  | One coding problem: editor, 20 minute timer (warning only), Run tests, Submit           |
 | `/mistakes`     | Every wrong answer, filterable by level and topic                                       |
 | `/history`      | All past tests with date, type and score                                                |
 | `/login`        | Supabase email login                                                                    |
@@ -77,9 +80,9 @@ Seven tables. Anything that can be calculated (unlocked levels, weak topics, str
 | `tracks`    | id, name                                                                                                                                                                                     |
 | `levels`    | id, track_id, number, title                                                                                                                                                                  |
 | `topics`    | id, level_id, position, title, interview_question, reference_url                                                                                                                             |
-| `questions` | id, topic_id, type (`mcq`, `output`, `written`, `coding`), difficulty (`easy`, `medium`, `hard`), prompt, options (json), correct_answer, explanation, key_points (json), test_cases (json), starter_code |
+| `questions` | id, topic_id, type (`mcq`, `output`, `written`, `coding`), difficulty (`easy`, `medium`, `hard`), title (coding only), prompt, options (json), correct_answer, explanation, key_points (json), test_cases (json), starter_code |
 | `notes`     | topic_id, body, updated_at                                                                                                                                                                   |
-| `tests`     | id, kind (`topic_quiz`, `level_exam`, `review`), topic_id, level_id, started_at, finished_at, score, status (`in_progress`, `waiting_for_grading`, `graded`)                                 |
+| `tests`     | id, kind (`topic_quiz`, `level_exam`, `review`, `coding`), topic_id, level_id, started_at, finished_at, score, status (`in_progress`, `waiting_for_grading`, `graded`)                                 |
 | `answers`   | id, test_id, question_id, response, is_correct, score, feedback (json), graded_by (`gemini`, `groq`, `app`)                                                                                  |
 
 - Every schema change is a migration in `supabase/migrations/`.
@@ -91,6 +94,8 @@ Seven tables. Anything that can be calculated (unlocked levels, weak topics, str
 - Source of truth is `content/questions/level-N.json`, committed to git. The database is a copy loaded by `npm run seed`, so nothing important lives only in Supabase (free projects pause after a week of inactivity).
 - Per topic: 15 questions. 9 multiple choice (3 easy, 3 medium, 3 hard), 3 output prediction and 3 written (1 easy, 1 medium, 1 hard each). Written questions have 3 to 5 key points. Multiple choice and output questions have a 1 to 2 sentence `explanation`, shown on the results page when the answer is wrong.
 - Coding questions come from the syllabus coding ladder (30 functions), each with starter code and test cases.
+- Coding problems live in `content/coding.json`. Each test case is a JavaScript expression run next to the owner's code; its result must deep-equal `expected`. `correct_answer` holds a reference solution, and `npm run check-coding` checks that it passes every test and that the starter code fails at least one.
+- A coding attempt is saved as a `coding` test with one answer: the code in `response`, the fraction passed in `score`, and the test results in `feedback.tests`.
 - Validate every file with a Zod schema in the seed script. Fail loudly on invalid data.
 - When asked to generate questions for a level, write them to the JSON file only. The owner spot-checks them before seeding.
 
@@ -160,6 +165,8 @@ npm run build     # production build, must pass before a version is done
 npm run lint
 npm run test      # Vitest
 npm run seed      # validate content/ and load it into Supabase
+npm run check-outputs  # run every output snippet with Node
+npm run check-coding   # run every coding solution against its tests
 ```
 
 ## How to work

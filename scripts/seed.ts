@@ -3,7 +3,7 @@
 // Run with: npm run seed
 import { readFileSync, readdirSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
-import { questionFileSchema, syllabusSchema, type Question } from "../lib/content/schema.ts";
+import { codingFileSchema, questionFileSchema, syllabusSchema, type Question } from "../lib/content/schema.ts";
 
 function fail(message: string): never {
   console.error(`\nSeed failed: ${message}`);
@@ -34,6 +34,11 @@ for (const file of files) {
   }
   questions.push(...parsed.data.questions);
 }
+
+const coding = codingFileSchema.safeParse(readJson("content/coding.json"));
+if (!coding.success) fail(`content/coding.json\n${issues(coding.error)}`);
+for (const q of coding.data.questions)
+  if (!topicLevel.has(q.topic_id)) fail(`coding.json: ${q.id} has unknown topic ${q.topic_id}`);
 
 function issues(error: { issues: { path: PropertyKey[]; message: string }[] }) {
   return error.issues.map((i) => `  ${i.path.join(".")}: ${i.message}`).join("\n");
@@ -72,6 +77,23 @@ await upsert(
     starter_code: null,
   })),
 );
+await upsert(
+  "questions",
+  coding.data.questions.map((q) => ({
+    id: q.id,
+    topic_id: q.topic_id,
+    type: "coding",
+    difficulty: q.difficulty,
+    title: q.title,
+    prompt: q.prompt,
+    options: null,
+    correct_answer: q.solution,
+    explanation: null,
+    key_points: null,
+    test_cases: q.test_cases,
+    starter_code: q.starter_code,
+  })),
+);
 
 console.log(`Seeded ${tracks.length} track, ${levels.length} levels, ${topicLevel.size} topics.`);
 const summary = new Map<number, Record<string, number>>();
@@ -83,3 +105,4 @@ for (const q of questions) {
 }
 for (const [level, row] of [...summary].sort((a, b) => a[0] - b[0]))
   console.log(`Level ${level}: ${Object.entries(row).map(([t, n]) => `${n} ${t}`).join(", ")}`);
+console.log(`Coding: ${coding.data.questions.length} problems`);

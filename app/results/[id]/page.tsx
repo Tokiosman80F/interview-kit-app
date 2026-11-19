@@ -4,16 +4,18 @@ import { createClient } from "@/lib/supabase/server";
 import { topicsInOrder } from "@/lib/data";
 import { testItems } from "@/lib/test-questions";
 import { CodeBlock, RichText } from "@/components/rich-text";
+import { CodingResult } from "./coding-result";
 
 export default async function ResultsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
   const { data: test } = await supabase
     .from("tests")
-    .select("status, score, topic_id")
+    .select("kind, status, score, topic_id")
     .eq("id", id)
     .maybeSingle();
   if (!test) notFound();
+  if (test.kind === "coding") return <CodingResult supabase={supabase} testId={id} score={Number(test.score)} />;
   if (test.status === "in_progress") redirect(`/test/${id}`);
 
   const [items, topics] = await Promise.all([testItems(supabase, id), topicsInOrder(supabase)]);

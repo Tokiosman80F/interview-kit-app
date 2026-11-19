@@ -14,7 +14,9 @@ A personal JavaScript interview-prep app: study the syllabus topic by topic, wri
 
 - `content/syllabus.json`: levels and topics.
 - `content/questions/level-N.json`: the question bank, one file per level.
+- `content/coding.json`: the coding ladder, with a reference solution and test cases per problem.
 - `npm run check-outputs` runs every output-prediction snippet with Node and checks the stored answer.
+- `npm run check-coding` runs every reference solution against its tests.
 - `npm run seed` validates everything with Zod and upserts it into Supabase. Running it twice changes nothing.
 
 ## Checks

@@ -17,6 +17,12 @@ export function gradeOutput(response: string | null, correct: string): number {
 }
 
 // Average of question scores as a whole percentage. Zero questions scores 0.
+// Coding: the fraction of test cases passed.
+export function gradeCoding(passed: boolean[]): number {
+  if (passed.length === 0) return 0;
+  return passed.filter(Boolean).length / passed.length;
+}
+
 export function testScore(scores: number[]): number {
   if (scores.length === 0) return 0;
   const sum = scores.reduce((a, b) => a + b, 0);
