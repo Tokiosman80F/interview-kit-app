@@ -7,14 +7,14 @@ import { CodeBlock, RichText } from "@/components/rich-text";
 type Answer = {
   response: string | null;
   feedback: { tests: TestResult[] } | null;
-  question: { id: string; title: string; correct_answer: string | null };
+  question: { id: string; title: string; correct_answer: string | null; explanation: string | null };
 };
 
 export async function CodingResult({ supabase, testId, score }: { supabase: SupabaseClient; testId: string; score: number }) {
   const [{ data }, ladder] = await Promise.all([
     supabase
       .from("answers")
-      .select("response, feedback, question:questions!inner(id, title, correct_answer)")
+      .select("response, feedback, question:questions!inner(id, title, correct_answer, explanation)")
       .eq("test_id", testId)
       .single(),
     codingLadder(supabase),
@@ -71,11 +71,19 @@ export async function CodingResult({ supabase, testId, score }: { supabase: Supa
 
       {q.correct_answer && (
         <details className="collapse collapse-arrow bg-base-100 shadow">
-          <summary className="collapse-title font-semibold">Model solution</summary>
-          <div className="collapse-content flex flex-col gap-2">
+          <summary className="collapse-title font-semibold">Model solution and explanation</summary>
+          <div className="collapse-content flex flex-col gap-3">
             <p className="text-sm text-base-content/60">
               If you did not solve it, read this, then write it again from memory on your next coding day.
             </p>
+            {q.explanation && (
+              <div className="bg-base-200 rounded-box p-3">
+                <p className="font-semibold">How it works</p>
+                <p>
+                  <RichText text={q.explanation} />
+                </p>
+              </div>
+            )}
             <CodeBlock code={q.correct_answer} />
           </div>
         </details>

@@ -88,7 +88,7 @@ await upsert(
     prompt: q.prompt,
     options: null,
     correct_answer: q.solution,
-    explanation: null,
+    explanation: q.explanation,
     key_points: null,
     test_cases: q.test_cases,
     starter_code: q.starter_code,

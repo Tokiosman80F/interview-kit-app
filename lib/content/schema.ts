@@ -80,6 +80,8 @@ export const codingSchema = z.object({
   prompt: z.string().min(1),
   starter_code: z.string().min(1),
   solution: z.string().min(1),
+  // How the solution works, shown with it on the results page.
+  explanation: z.string().min(1),
   test_cases: z
     .array(z.object({ name: z.string().min(1), call: z.string().min(1), expected: z.json() }))
     .min(4)
