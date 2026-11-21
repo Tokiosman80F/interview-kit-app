@@ -5,6 +5,10 @@ import { topicsInOrder } from "@/lib/data";
 import { RichText } from "@/components/rich-text";
 import { NotesBox } from "@/components/notes-box";
 import { startQuiz } from "./actions";
+import explanations from "@/content/explain.json";
+
+// Cheat-sheet lines that have a static explanation page in public/explain/.
+const explainLinks: Record<string, string> = explanations;
 
 export default async function TopicPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -70,6 +74,14 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
               {keyPoints.map((p) => (
                 <li key={p}>
                   <RichText text={p} />
+                  {explainLinks[p] && (
+                    <>
+                      {" "}
+                      <a href={explainLinks[p]} className="link link-primary whitespace-nowrap">
+                        Explain this →
+                      </a>
+                    </>
+                  )}
                 </li>
               ))}
             </ul>

@@ -52,6 +52,8 @@ lib/
 content/questions/       question bank, one JSON file per level: level-1.json, ...
 content/syllabus.json    tracks, levels, topics
 content/coding.json      coding ladder: prompt, starter code, reference solution, test cases
+content/explain.json     cheat-sheet line -> static explanation page in public/explain/
+public/explain/          static .html explanation pages, linked from the topic cheat sheet
 supabase/migrations/     SQL migrations
 scripts/seed.ts          loads content/ into Supabase
 ```
