@@ -200,10 +200,10 @@ Goal: the full exam system, with unlocking and the 3-day review.
 
 Goal: one place that says what to do today and shows weak spots; the app online.
 
-- [ ] `lib/scoring`: streak (Asia/Dhaka days) and day type (quiz day or coding day, alternating from the last completed daily task; a due review comes first). Vitest tests.
-- [ ] Dashboard at `/`: today's task as one big button, current level, streak, days to next review, top 5 weak topics.
-- [ ] `/mistakes`: every wrong or low-scored answer (under 70%), newest first, filterable by level and topic, with the correct or model answer.
-- [ ] `/history`: all tests with date, kind, score and a link to results.
+- [x] `lib/scoring`: streak (Asia/Dhaka days) and day type (quiz day or coding day, alternating from the last completed daily task; a due review comes first). Vitest tests.
+- [x] Dashboard at `/`: today's task as one big button, current level, streak, days to next review, top 5 weak topics.
+- [x] `/mistakes`: every wrong or low-scored answer (under 70%), newest first, filterable by level and topic, with the correct or model answer.
+- [x] `/history`: all tests with date, kind, score and a link to results.
 - [ ] **OWNER:** Create a Vercel project from the repository and add the environment variables. Explain the steps briefly.
 - [ ] Deploy, then check login, a quiz and AI grading on the live site.
 - [ ] Version 5 check: lint, test, build, and an owner checklist covering the dashboard, mistakes and history on the live site, on a phone.

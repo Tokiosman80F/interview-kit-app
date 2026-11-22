@@ -10,7 +10,7 @@ export async function login(formData: FormData) {
     password: String(formData.get("password")),
   });
   if (error) redirect(`/login?error=${encodeURIComponent(error.message)}`);
-  redirect("/syllabus");
+  redirect("/");
 }
 
 export async function logout() {

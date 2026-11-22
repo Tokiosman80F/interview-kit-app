@@ -18,14 +18,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="min-h-screen bg-base-200">
         <nav className="navbar bg-base-100 shadow-sm px-2 sm:px-4">
           <div className="flex-1">
-            <Link href="/syllabus" className="btn btn-ghost text-lg px-2">Interview Prep</Link>
+            <Link href="/" className="btn btn-ghost text-lg px-2">Interview Prep</Link>
           </div>
           {data?.claims && (
-            <div className="flex items-center gap-1">
+            <div className="flex flex-wrap items-center justify-end gap-1">
               <Link href="/syllabus" className="btn btn-ghost btn-sm">Syllabus</Link>
               <Link href="/coding" className="btn btn-ghost btn-sm">Coding</Link>
-              <Link href="/mistakes" className="btn btn-ghost btn-sm hidden sm:inline-flex">Mistakes</Link>
-              <Link href="/history" className="btn btn-ghost btn-sm hidden sm:inline-flex">History</Link>
+              <Link href="/mistakes" className="btn btn-ghost btn-sm">Mistakes</Link>
+              <Link href="/history" className="btn btn-ghost btn-sm">History</Link>
               <form action={logout}>
                 <button className="btn btn-outline btn-sm">Log out</button>
               </form>

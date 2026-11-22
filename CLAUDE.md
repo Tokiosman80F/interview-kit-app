@@ -13,7 +13,7 @@ If a feature does not make the owner practise more or show a weak spot, do not b
 
 ## Current version
 
-**Version 4.** Build only what the current version lists, then stop. The owner uses each version for at least a week before asking for the next.
+**Version 5.** Build only what the current version lists, then stop. The owner uses each version for at least a week before asking for the next.
 
 | Version | Scope                                                                                                                              |
 | ------- | ---------------------------------------------------------------------------------------------------------------------------------- |
