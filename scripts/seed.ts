@@ -82,17 +82,17 @@ const tracks = syllabus.data.tracks;
 const levels = tracks.flatMap((t) => t.levels.map((l) => ({ track: t.id, ...l })));
 const topics = levels.flatMap((l) => l.topics.map((t) => ({ ...t, level_id: l.id })));
 
+// The order matters, because of foreign keys and the unique (level_id, position):
+// 1. remove questions no longer in content/;
+// 2. write levels, then park every topic at position + 1000, so new topics
+//    exist without clashing with the old positions;
+// 3. write the questions, which moves any question onto its new topic;
+// 4. remove topics and levels no longer in content/ (nothing points to them now);
+// 5. write the real topic positions, which are all free by then.
 await removeStale("questions", new Set([...questions.map((q) => q.id), ...coding.data.questions.map((q) => q.id)]));
-await removeStale("topics", new Set(topics.map((t) => t.id)));
-await removeStale("levels", new Set(levels.map((l) => l.id)));
-
 await upsert("tracks", tracks.map(({ id, name }) => ({ id, name })));
 await upsert("levels", levels.map((l) => ({ id: l.id, track_id: l.track, number: l.number, title: l.title })));
-// (level_id, position) is unique and checked row by row, so renumbering in
-// place can collide. First park every topic at position + 1000, then write the
-// real positions: every target position is free by then.
 await upsert("topics", topics.map((t) => ({ ...t, position: t.position + 1000 })));
-await upsert("topics", topics);
 await upsert(
   "questions",
   questions.map((q) => ({
@@ -107,7 +107,7 @@ await upsert(
     key_points: q.type === "written" ? q.key_points : null,
     test_cases: null,
     starter_code: null,
-  })),
+  }))
 );
 await upsert(
   "questions",
@@ -124,8 +124,11 @@ await upsert(
     key_points: null,
     test_cases: q.test_cases,
     starter_code: q.starter_code,
-  })),
+  }))
 );
+await removeStale("topics", new Set(topics.map((t) => t.id)));
+await removeStale("levels", new Set(levels.map((l) => l.id)));
+await upsert("topics", topics);
 
 console.log(`Seeded ${tracks.length} track, ${levels.length} levels, ${topicLevel.size} topics.`);
 const summary = new Map<number, Record<string, number>>();
