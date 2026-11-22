@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { testItems } from "@/lib/test-questions";
 import { TestRunner } from "@/components/test-runner";
+import { seededShuffle } from "@/lib/selection/shuffle";
 
 export default async function TestPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -27,7 +28,8 @@ export default async function TestPage({ params }: { params: Promise<{ id: strin
         type: question.type,
         difficulty: question.difficulty,
         prompt: question.prompt,
-        options: question.options,
+        // The content files list the right option first, so shuffle per attempt.
+        options: question.options && seededShuffle(question.options, `${id}:${question.id}`),
       }))}
       initialResponses={items.map((it) => it.response ?? "")}
     />

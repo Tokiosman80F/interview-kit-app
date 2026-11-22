@@ -96,7 +96,9 @@ Seven tables. Anything that can be calculated (unlocked levels, weak topics, str
 
 - Source of truth is `content/questions/level-N.json`, committed to git. The database is a copy loaded by `npm run seed`, so nothing important lives only in Supabase (free projects pause after a week of inactivity).
 - Per topic: 15 questions. 9 multiple choice (3 easy, 3 medium, 3 hard), 3 output prediction and 3 written (1 easy, 1 medium, 1 hard each). Written questions have 3 to 5 key points. Multiple choice and output questions have a 1 to 2 sentence `explanation`, shown on the results page when the answer is wrong.
-- Coding questions come from the syllabus coding ladder (30 functions), each with starter code and test cases.
+- Coding questions come from the syllabus coding ladder (12 functions), each with starter code and test cases. The syllabus has 37 topics in 6 levels.
+- Removing content: delete it from `content/`; `npm run seed` then deletes the matching rows, and stops instead if any of the owner's tests, answers or notes still use them.
+- Multiple choice options are stored with the correct one first. The quiz page shuffles them per attempt with `seededShuffle` (`lib/selection/shuffle.ts`), seeded by test id and question id.
 - Coding problems live in `content/coding.json`. Each test case is a JavaScript expression run next to the owner's code; its result must deep-equal `expected`. `correct_answer` holds a reference solution and `explanation` says how it works (both shown on the results page after a submit), and `npm run check-coding` checks that it passes every test and that the starter code fails at least one.
 - A coding attempt is saved as a `coding` test with one answer: the code in `response`, the fraction passed in `score`, and the test results in `feedback.tests`.
 - Validate every file with a Zod schema in the seed script. Fail loudly on invalid data.

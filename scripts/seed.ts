@@ -56,17 +56,43 @@ async function upsert(table: string, rows: object[]) {
   }
 }
 
+// Every id currently in a table, read in pages (Supabase returns at most 1000 rows at once).
+async function existingIds(table: string): Promise<string[]> {
+  const ids: string[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await db.from(table).select("id").order("id").range(from, from + 999);
+    if (error) fail(`${table}: ${error.message}`);
+    ids.push(...data.map((r) => r.id as string));
+    if (data.length < 1000) return ids;
+  }
+}
+
+// Removes rows that are no longer in content/. If any of the owner's tests,
+// answers or notes still point to a row, the delete fails and the seed stops,
+// so trimming the syllabus can never silently drop the owner's data.
+async function removeStale(table: string, keep: Set<string>) {
+  const stale = (await existingIds(table)).filter((id) => !keep.has(id));
+  if (stale.length === 0) return;
+  const { error } = await db.from(table).delete().in("id", stale);
+  if (error) fail(`${table}: could not remove ${stale.join(", ")}. Your own data still uses them: ${error.message}`);
+  console.log(`Removed ${stale.length} ${table} no longer in content/.`);
+}
+
 const tracks = syllabus.data.tracks;
 const levels = tracks.flatMap((t) => t.levels.map((l) => ({ track: t.id, ...l })));
+const topics = levels.flatMap((l) => l.topics.map((t) => ({ ...t, level_id: l.id })));
+
+await removeStale("questions", new Set([...questions.map((q) => q.id), ...coding.data.questions.map((q) => q.id)]));
+await removeStale("topics", new Set(topics.map((t) => t.id)));
+await removeStale("levels", new Set(levels.map((l) => l.id)));
+
 await upsert("tracks", tracks.map(({ id, name }) => ({ id, name })));
 await upsert("levels", levels.map((l) => ({ id: l.id, track_id: l.track, number: l.number, title: l.title })));
-// Highest position first: when a new topic is inserted mid-level, the topics
-// after it move up by one, and each must move before the one below takes its
-// old place, because (level_id, position) is unique and checked row by row.
-await upsert(
-  "topics",
-  levels.flatMap((l) => l.topics.map((t) => ({ ...t, level_id: l.id }))).sort((a, b) => b.position - a.position),
-);
+// (level_id, position) is unique and checked row by row, so renumbering in
+// place can collide. First park every topic at position + 1000, then write the
+// real positions: every target position is free by then.
+await upsert("topics", topics.map((t) => ({ ...t, position: t.position + 1000 })));
+await upsert("topics", topics);
 await upsert(
   "questions",
   questions.map((q) => ({

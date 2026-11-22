@@ -19,24 +19,6 @@
       ]
     },
     {
-      "id": "code-02",
-      "topic_id": "js-13",
-      "difficulty": "easy",
-      "title": "Write your own `filter`",
-      "prompt": "Write `filter(array, callback)` without using `Array.prototype.filter`. Return a new array with the items for which `callback(item, index, array)` returns a truthy value. Do not change the original array.",
-      "starter_code": "function filter(array, callback) {\n  // Return a new array of the items where callback(item, index, array) is truthy.\n}\n",
-      "solution": "function filter(array, callback) {\n  const result = [];\n  for (let i = 0; i < array.length; i++) {\n    if (callback(array[i], i, array)) result.push(array[i]);\n  }\n  return result;\n}\n",
-      "explanation": "Use the same loop as `map`, but push the item only when the callback returns a truthy value, not just `true`, so a callback like `(x) => x` drops `0`, `\"\"` and `null`. Push the original item, not the callback's result. The original array is never changed. It runs in O(n).",
-      "test_cases": [
-        { "name": "keeps even numbers", "call": "filter([1, 2, 3, 4], (n) => n % 2 === 0)", "expected": [2,4] },
-        { "name": "empty array", "call": "filter([], () => true)", "expected": [] },
-        { "name": "nothing matches", "call": "filter([1, 2], () => false)", "expected": [] },
-        { "name": "uses truthy values, not just true", "call": "filter([0, 1, \"\", \"a\", null], (x) => x)", "expected": [1,"a"] },
-        { "name": "passes the index", "call": "filter([\"a\", \"b\", \"c\"], (x, i) => i !== 1)", "expected": ["a","c"] },
-        { "name": "does not use the built-in filter", "call": "(() => { const built = Array.prototype.filter; Array.prototype.filter = () => { throw new Error(\"used the built-in filter\"); }; try { return filter([1, 2], (n) => n > 1); } finally { Array.prototype.filter = built; } })()", "expected": [2] }
-      ]
-    },
-    {
       "id": "code-03",
       "topic_id": "js-13",
       "difficulty": "easy",
@@ -56,7 +38,7 @@
     },
     {
       "id": "code-04",
-      "topic_id": "js-20",
+      "topic_id": "js-13",
       "difficulty": "easy",
       "title": "`groupBy(items, key)`",
       "prompt": "Write `groupBy(items, key)`. It takes an array of objects and a property name, and returns an object where each key is a value of that property and each value is an array of the matching items, in their original order.",
@@ -69,42 +51,6 @@
         { "name": "one group", "call": "groupBy([{ a: 1 }, { a: 1 }], \"a\")", "expected": {"1":[{"a":1},{"a":1}]} },
         { "name": "keeps the original order inside a group", "call": "groupBy([{ g: \"x\", n: 3 }, { g: \"x\", n: 1 }, { g: \"x\", n: 2 }], \"g\").x.map((i) => i.n)", "expected": [3,1,2] },
         { "name": "does not change the items", "call": "(() => { const items = [{ g: \"x\" }]; groupBy(items, \"g\"); return items; })()", "expected": [{"g":"x"}] }
-      ]
-    },
-    {
-      "id": "code-05",
-      "topic_id": "js-37",
-      "difficulty": "easy",
-      "title": "`unique(array)`",
-      "prompt": "Write `unique(array)`. Return a new array without duplicates, keeping the first time each value appears. Solve it once with a `Set`, then once without one.",
-      "starter_code": "function unique(array) {\n  // Return a new array with each value once, in first-seen order.\n}\n",
-      "solution": "function unique(array) {\n  return [...new Set(array)];\n}\n",
-      "explanation": "A `Set` keeps only one copy of each value and remembers the order values were added, so `[...new Set(array)]` is the whole answer. Without a `Set`, loop and push an item only if the result does not already include it; that is O(n²), so mention that the `Set` version is O(n). Both treat `1` and \"1\" as different, because they compare with strict equality.",
-      "test_cases": [
-        { "name": "removes repeated numbers", "call": "unique([1, 2, 2, 3, 1])", "expected": [1,2,3] },
-        { "name": "empty array", "call": "unique([])", "expected": [] },
-        { "name": "strings", "call": "unique([\"js\", \"css\", \"js\"])", "expected": ["js","css"] },
-        { "name": "keeps first-seen order", "call": "unique([3, 1, 3, 2, 1])", "expected": [3,1,2] },
-        { "name": "1 and \"1\" are different", "call": "unique([1, \"1\", 1])", "expected": [1,"1"] },
-        { "name": "does not change the original", "call": "(() => { const a = [1, 1]; unique(a); return a; })()", "expected": [1,1] }
-      ]
-    },
-    {
-      "id": "code-06",
-      "topic_id": "js-13",
-      "difficulty": "easy",
-      "title": "`chunk(array, size)`",
-      "prompt": "Write `chunk(array, size)`. Split the array into groups of `size` items. The last group holds whatever is left. Do not change the original array.",
-      "starter_code": "function chunk(array, size) {\n  // Return an array of groups, each with up to `size` items.\n}\n",
-      "solution": "function chunk(array, size) {\n  const result = [];\n  for (let i = 0; i < array.length; i += size) {\n    result.push(array.slice(i, i + size));\n  }\n  return result;\n}\n",
-      "explanation": "Loop with `i += size` and push `array.slice(i, i + size)` each time. `slice` stops at the end of the array by itself, so the last chunk holds whatever is left, and a size bigger than the array gives one chunk. An empty array never enters the loop and returns `[]`. `slice` copies, so the input stays unchanged.",
-      "test_cases": [
-        { "name": "uneven split", "call": "chunk([1, 2, 3, 4, 5], 2)", "expected": [[1,2],[3,4],[5]] },
-        { "name": "empty array", "call": "chunk([], 3)", "expected": [] },
-        { "name": "even split", "call": "chunk([1, 2, 3, 4], 2)", "expected": [[1,2],[3,4]] },
-        { "name": "size bigger than the array", "call": "chunk([1, 2], 5)", "expected": [[1,2]] },
-        { "name": "size 1", "call": "chunk([\"a\", \"b\"], 1)", "expected": [["a"],["b"]] },
-        { "name": "does not change the original", "call": "(() => { const a = [1, 2, 3]; chunk(a, 2); return a; })()", "expected": [1,2,3] }
       ]
     },
     {
@@ -123,40 +69,6 @@
         { "name": "empty nested arrays", "call": "flatten([[], [[]], [1]])", "expected": [1] },
         { "name": "does not change the original", "call": "(() => { const a = [1, [2]]; flatten(a); return a; })()", "expected": [1,[2]] },
         { "name": "does not use the built-in flat", "call": "(() => { const built = Array.prototype.flat; Array.prototype.flat = () => { throw new Error(\"used the built-in flat\"); }; try { return flatten([[1], [2]]); } finally { Array.prototype.flat = built; } })()", "expected": [1,2] }
-      ]
-    },
-    {
-      "id": "code-08",
-      "topic_id": "js-20",
-      "difficulty": "easy",
-      "title": "`countBy(array)`",
-      "prompt": "Write `countBy(array)`. Return an object that counts how many times each value appears in the array.",
-      "starter_code": "function countBy(array) {\n  // Return { value: number of times it appears }.\n}\n",
-      "solution": "function countBy(array) {\n  const counts = {};\n  for (const value of array) counts[value] = (counts[value] || 0) + 1;\n  return counts;\n}\n",
-      "explanation": "Use an object as a counter. For each value, write `counts[value] = (counts[value] || 0) + 1`: read the old count, or 0 the first time, and add one. Keys become strings, so `1` is counted under \"1\". A `Map` works too, and keeps the real type of each key.",
-      "test_cases": [
-        { "name": "counts strings", "call": "countBy([\"a\", \"b\", \"a\", \"a\"])", "expected": {"a":3,"b":1} },
-        { "name": "empty array", "call": "countBy([])", "expected": {} },
-        { "name": "counts numbers", "call": "countBy([1, 1, 2])", "expected": {"1":2,"2":1} },
-        { "name": "case matters", "call": "countBy([\"A\", \"a\"])", "expected": {"A":1,"a":1} },
-        { "name": "one value", "call": "countBy([\"x\"])", "expected": {"x":1} }
-      ]
-    },
-    {
-      "id": "code-09",
-      "topic_id": "js-9",
-      "difficulty": "easy",
-      "title": "`once(fn)`",
-      "prompt": "Write `once(fn)`. It returns a new function that calls `fn` only the first time it is called, with the same arguments and `this`. Every later call returns the result of that first call without calling `fn` again.",
-      "starter_code": "function once(fn) {\n  // Return a function that runs fn only the first time.\n}\n",
-      "solution": "function once(fn) {\n  let called = false;\n  let result;\n  return function (...args) {\n    if (!called) {\n      called = true;\n      result = fn.apply(this, args);\n    }\n    return result;\n  };\n}\n",
-      "explanation": "Keep two variables in a closure: `called` and `result`. The first call sets `called = true`, runs `fn.apply(this, args)` and stores the result; every later call just returns `result`. Use a separate flag instead of checking `result`, because `fn` might return `undefined` or `0`. Return a regular `function`, not an arrow function, so `this` is passed through.",
-      "test_cases": [
-        { "name": "calls fn only once", "call": "(() => { let n = 0; const f = once(() => ++n); f(); f(); f(); return n; })()", "expected": 1 },
-        { "name": "returns the first result every time", "call": "(() => { const f = once((x) => x * 2); return [f(2), f(5)]; })()", "expected": [4,4] },
-        { "name": "no arguments", "call": "once(() => 7)()", "expected": 7 },
-        { "name": "fn that returns nothing still runs once", "call": "(() => { let n = 0; const f = once(() => { n++; }); f(); f(); return n; })()", "expected": 1 },
-        { "name": "keeps this", "call": "(() => { const user = { name: \"Ann\", hi: once(function () { return this.name; }) }; return user.hi(); })()", "expected": "Ann" }
       ]
     },
     {
@@ -214,7 +126,7 @@
     },
     {
       "id": "code-13",
-      "topic_id": "js-14",
+      "topic_id": "js-9",
       "difficulty": "medium",
       "title": "`curry(fn)`",
       "prompt": "Write `curry(fn)`. The curried function collects arguments over one or more calls. Once it has at least `fn.length` arguments, it calls `fn` with them; until then, it returns a function that waits for more.",
@@ -269,44 +181,6 @@
       ]
     },
     {
-      "id": "code-16",
-      "topic_id": "js-15",
-      "difficulty": "medium",
-      "title": "`deepEqual(a, b)`",
-      "prompt": "Write `deepEqual(a, b)`. Return `true` when `a` and `b` are equal primitives, or objects and arrays with the same keys and deeply equal values. Key order does not matter, but an array is never equal to a plain object.",
-      "starter_code": "function deepEqual(a, b) {\n  // Compare primitives directly, and objects and arrays key by key.\n}\n",
-      "solution": "function deepEqual(a, b) {\n  if (a === b) return true;\n  if (typeof a !== \"object\" || typeof b !== \"object\" || a === null || b === null) return false;\n  if (Array.isArray(a) !== Array.isArray(b)) return false;\n  const keysA = Object.keys(a);\n  const keysB = Object.keys(b);\n  if (keysA.length !== keysB.length) return false;\n  return keysA.every((k) => Object.prototype.hasOwnProperty.call(b, k) && deepEqual(a[k], b[k]));\n}\n",
-      "explanation": "If `a === b`, they are equal. Otherwise both must be non-null objects of the same kind, both arrays or both not, with the same number of keys, and every key of `a` must exist in `b` with a deeply equal value. Comparing the key counts and then checking every key makes the key order irrelevant. Recursion handles the nesting.",
-      "test_cases": [
-        { "name": "equal nested objects", "call": "deepEqual({ a: [1, { b: 2 }] }, { a: [1, { b: 2 }] })", "expected": true },
-        { "name": "a different nested value", "call": "deepEqual({ a: { b: 1 } }, { a: { b: 2 } })", "expected": false },
-        { "name": "key order does not matter", "call": "deepEqual({ a: 1, b: 2 }, { b: 2, a: 1 })", "expected": true },
-        { "name": "an extra key", "call": "deepEqual({ a: 1 }, { a: 1, b: 2 })", "expected": false },
-        { "name": "an array is not an object", "call": "deepEqual([1], { 0: 1 })", "expected": false },
-        { "name": "null is not an empty object", "call": "deepEqual(null, {})", "expected": false },
-        { "name": "primitives", "call": "[deepEqual(1, 1), deepEqual(1, \"1\"), deepEqual(\"a\", \"a\")]", "expected": [true,false,true] },
-        { "name": "empty objects", "call": "deepEqual({}, {})", "expected": true }
-      ]
-    },
-    {
-      "id": "code-17",
-      "topic_id": "js-13",
-      "difficulty": "medium",
-      "title": "`compose` and `pipe`",
-      "prompt": "Write `compose(...fns)` and `pipe(...fns)`. Both return a function that passes a value through every function. `compose` runs them right to left, `pipe` left to right. The first function to run gets all the arguments; with no functions, return the first argument unchanged.",
-      "starter_code": "function compose(...fns) {\n  // Run the functions right to left.\n}\n\nfunction pipe(...fns) {\n  // Run the functions left to right.\n}\n",
-      "solution": "function compose(...fns) {\n  return pipe(...fns.slice().reverse());\n}\n\nfunction pipe(...fns) {\n  return (...args) => {\n    if (fns.length === 0) return args[0];\n    let result = fns[0](...args);\n    for (let i = 1; i < fns.length; i++) result = fns[i](result);\n    return result;\n  };\n}\n",
-      "explanation": "`pipe` calls the first function with all the arguments, then passes each result on to the next function in a loop. `compose` is the same in reverse, so it can reuse `pipe` with a reversed copy of the list. With no functions, return the first argument unchanged. It is the same idea as `reduce`, and it is how Redux's `compose` works.",
-      "test_cases": [
-        { "name": "compose runs right to left", "call": "compose((x) => x + 1, (x) => x * 2)(5)", "expected": 11 },
-        { "name": "pipe runs left to right", "call": "pipe((x) => x + 1, (x) => x * 2)(5)", "expected": 12 },
-        { "name": "one function", "call": "[compose((x) => x * 3)(2), pipe((x) => x * 3)(2)]", "expected": [6,6] },
-        { "name": "no functions returns the input", "call": "[compose()(7), pipe()(7)]", "expected": [7,7] },
-        { "name": "the first function to run gets all the arguments", "call": "[compose((x) => x + 1, (a, b) => a * b)(2, 3), pipe((a, b) => a * b, (x) => x + 1)(2, 3)]", "expected": [7,7] },
-        { "name": "works with strings", "call": "pipe((s) => s.trim(), (s) => s.toUpperCase())(\"  hi \")", "expected": "HI" }
-      ]
-    },
-    {
       "id": "code-18",
       "topic_id": "js-28",
       "difficulty": "medium",
@@ -325,63 +199,8 @@
       ]
     },
     {
-      "id": "code-19",
-      "topic_id": "js-28",
-      "difficulty": "medium",
-      "title": "Write your own `Promise.allSettled`",
-      "prompt": "Write `promiseAllSettled(promises)` without using `Promise.allSettled`. Return a promise that never rejects. It resolves, once every input has settled, with an array in input order of `{ status: \"fulfilled\", value }` or `{ status: \"rejected\", reason }`.",
-      "starter_code": "function promiseAllSettled(promises) {\n  // Wait for every promise and report each one's status.\n}\n",
-      "solution": "function promiseAllSettled(promises) {\n  return new Promise((resolve) => {\n    const results = new Array(promises.length);\n    let left = promises.length;\n    if (left === 0) return resolve([]);\n    promises.forEach((p, i) => {\n      Promise.resolve(p)\n        .then(\n          (value) => { results[i] = { status: \"fulfilled\", value }; },\n          (reason) => { results[i] = { status: \"rejected\", reason }; },\n        )\n        .then(() => {\n          left--;\n          if (left === 0) resolve(results);\n        });\n    });\n  });\n}\n",
-      "explanation": "Use the same structure as `Promise.all`, but give each input both handlers: on success store `{ status: \"fulfilled\", value }`, on failure `{ status: \"rejected\", reason }`. Neither handler rejects the outer promise, so it can only resolve. Count down after each input settles, and resolve when all are done. Store by index to keep the input order.",
-      "test_cases": [
-        { "name": "reports both outcomes", "call": "promiseAllSettled([Promise.resolve(1), Promise.reject(\"bad\")])", "expected": [{"status":"fulfilled","value":1},{"status":"rejected","reason":"bad"}] },
-        { "name": "empty array", "call": "promiseAllSettled([])", "expected": [] },
-        { "name": "keeps the input order", "call": "(() => { const later = (ms, v) => new Promise((r) => setTimeout(() => r(v), ms)); return promiseAllSettled([later(30, \"a\"), later(10, \"b\")]); })()", "expected": [{"status":"fulfilled","value":"a"},{"status":"fulfilled","value":"b"}] },
-        { "name": "never rejects, even when everything fails", "call": "promiseAllSettled([Promise.reject(\"x\"), Promise.reject(\"y\")]).then(() => \"resolved\", () => \"rejected\")", "expected": "resolved" },
-        { "name": "plain values", "call": "promiseAllSettled([1])", "expected": [{"status":"fulfilled","value":1}] },
-        { "name": "does not use the built-in Promise.allSettled", "call": "(async () => { const built = Promise.allSettled; Promise.allSettled = () => { throw new Error(\"used the built-in Promise.allSettled\"); }; try { return await promiseAllSettled([1]); } finally { Promise.allSettled = built; } })()", "expected": [{"status":"fulfilled","value":1}] }
-      ]
-    },
-    {
-      "id": "code-20",
-      "topic_id": "js-28",
-      "difficulty": "medium",
-      "title": "Write your own `Promise.race` and `Promise.any`",
-      "prompt": "Write `promiseRace(promises)` and `promiseAny(promises)` without the built-ins. `promiseRace` settles like the first input to settle, fulfilled or rejected. `promiseAny` resolves with the first input to fulfil, and rejects with an `AggregateError` holding all the errors, in input order, if every input rejects. An empty array makes `promiseAny` reject.",
-      "starter_code": "function promiseRace(promises) {\n  // Settle like the first promise to settle.\n}\n\nfunction promiseAny(promises) {\n  // Resolve with the first success; reject with an AggregateError if all fail.\n}\n",
-      "solution": "function promiseRace(promises) {\n  return new Promise((resolve, reject) => {\n    for (const p of promises) Promise.resolve(p).then(resolve, reject);\n  });\n}\n\nfunction promiseAny(promises) {\n  return new Promise((resolve, reject) => {\n    const errors = new Array(promises.length);\n    let left = promises.length;\n    if (left === 0) return reject(new AggregateError([], \"All promises were rejected\"));\n    promises.forEach((p, i) => {\n      Promise.resolve(p).then(resolve, (error) => {\n        errors[i] = error;\n        left--;\n        if (left === 0) reject(new AggregateError(errors, \"All promises were rejected\"));\n      });\n    });\n  });\n}\n",
-      "explanation": "`promiseRace` connects every input straight to `resolve` and `reject`: whichever settles first wins, and later calls do nothing, because a promise settles only once. `promiseAny` resolves on the first success but collects the errors by index; only when every input has rejected does it reject with `new AggregateError(errors, message)`. An empty array makes `any` reject straight away, while `race` would stay pending forever.",
-      "test_cases": [
-        { "name": "race gives the fastest value", "call": "(() => { const later = (ms, v) => new Promise((r) => setTimeout(() => r(v), ms)); return promiseRace([later(30, \"slow\"), later(10, \"fast\")]); })()", "expected": "fast" },
-        { "name": "race rejects when the fastest rejects", "call": "(() => { const later = (ms, v) => new Promise((r) => setTimeout(() => r(v), ms)); const failFast = new Promise((_, no) => setTimeout(() => no(new Error(\"fast fail\")), 10)); return promiseRace([later(30, \"slow\"), failFast]).then((v) => v, (e) => e.message); })()", "expected": "fast fail" },
-        { "name": "any skips rejections", "call": "(() => { const later = (ms, v) => new Promise((r) => setTimeout(() => r(v), ms)); return promiseAny([Promise.reject(new Error(\"a\")), later(20, \"ok\")]); })()", "expected": "ok" },
-        { "name": "any gives the first success", "call": "(() => { const later = (ms, v) => new Promise((r) => setTimeout(() => r(v), ms)); return promiseAny([later(30, \"slow\"), later(10, \"fast\")]); })()", "expected": "fast" },
-        { "name": "any rejects with an AggregateError when all fail", "call": "promiseAny([Promise.reject(\"a\"), Promise.reject(\"b\")]).then(() => \"resolved\", (e) => [e instanceof AggregateError, e.errors])", "expected": [true,["a","b"]] },
-        { "name": "any rejects for an empty array", "call": "promiseAny([]).then(() => \"resolved\", (e) => e instanceof AggregateError)", "expected": true },
-        { "name": "does not use the built-in race or any", "call": "(async () => { const race = Promise.race; const any = Promise.any; Promise.race = Promise.any = () => { throw new Error(\"used a built-in\"); }; try { return [await promiseRace([1]), await promiseAny([2])]; } finally { Promise.race = race; Promise.any = any; } })()", "expected": [1,2] }
-      ]
-    },
-    {
-      "id": "code-21",
-      "topic_id": "js-27",
-      "difficulty": "medium",
-      "title": "`retry(fn, times, delay)`",
-      "prompt": "Write `retry(fn, times, delay)`. Call `fn`, which may return a promise or throw. If it fails, wait `delay` ms and try again, up to `times` tries in total. Return a promise that resolves with the first success, or rejects with the last error. Do not wait after the last failed try.",
-      "starter_code": "function retry(fn, times, delay) {\n  // Try fn up to `times` times, waiting `delay` ms between failed tries.\n}\n",
-      "solution": "async function retry(fn, times, delay) {\n  let lastError;\n  for (let attempt = 1; attempt <= times; attempt++) {\n    try {\n      return await fn();\n    } catch (error) {\n      lastError = error;\n      if (attempt < times) await new Promise((r) => setTimeout(r, delay));\n    }\n  }\n  throw lastError;\n}\n",
-      "explanation": "An `async` function with a loop is the clearest version. Each try runs `return await fn()` inside `try`, so both a rejected promise and an error thrown straight away land in `catch`. On a failure, remember the error and wait `delay` ms, but only if there are tries left. After the loop, throw the last error. A common follow-up is exponential backoff: double the delay after each failure.",
-      "test_cases": [
-        { "name": "works on the first try", "call": "(async () => { let calls = 0; const v = await retry(async () => { calls++; return \"ok\"; }, 3, 10); return [v, calls]; })()", "expected": ["ok",1] },
-        { "name": "succeeds on the third try", "call": "(async () => { let calls = 0; const v = await retry(async () => { calls++; if (calls < 3) throw new Error(\"fail\"); return \"ok\"; }, 5, 10); return [v, calls]; })()", "expected": ["ok",3] },
-        { "name": "gives up with the last error", "call": "(async () => { let calls = 0; try { await retry(async () => { calls++; throw new Error(\"fail \" + calls); }, 3, 10); return \"resolved\"; } catch (e) { return [e.message, calls]; } })()", "expected": ["fail 3",3] },
-        { "name": "waits between tries", "call": "(async () => { const start = Date.now(); let calls = 0; await retry(async () => { calls++; if (calls < 3) throw new Error(\"x\"); return 1; }, 3, 40); return Date.now() - start >= 75; })()", "expected": true },
-        { "name": "does not wait after the last try", "call": "(async () => { const start = Date.now(); try { await retry(async () => { throw new Error(\"x\"); }, 1, 300); } catch {} return Date.now() - start < 150; })()", "expected": true },
-        { "name": "a function that throws right away", "call": "retry(() => { throw new Error(\"sync\"); }, 2, 10).then(() => \"resolved\", (e) => e.message)", "expected": "sync" }
-      ]
-    },
-    {
       "id": "code-22",
-      "topic_id": "js-25",
+      "topic_id": "js-30",
       "difficulty": "medium",
       "title": "An event emitter",
       "prompt": "Write a class `EventEmitter` with `on(event, listener)`, `off(event, listener)`, `emit(event, ...args)` and `once(event, listener)`. `emit` calls the event's listeners in the order they were added, with the arguments. A `once` listener runs only one time, and can also be removed with `off` before it runs.",
@@ -397,160 +216,6 @@
         { "name": "emit with no listeners does not throw", "call": "(() => { const e = new EventEmitter(); e.emit(\"nothing\"); return \"ok\"; })()", "expected": "ok" },
         { "name": "removing a listener during emit does not skip the next one", "call": "(() => { const e = new EventEmitter(); const log = []; const first = () => { log.push(1); e.off(\"x\", first); }; e.on(\"x\", first); e.on(\"x\", () => log.push(2)); e.emit(\"x\"); e.emit(\"x\"); return log; })()", "expected": [1,2,2] },
         { "name": "a once listener can be removed with off", "call": "(() => { const e = new EventEmitter(); let n = 0; const f = () => n++; e.once(\"x\", f); e.off(\"x\", f); e.emit(\"x\"); return n; })()", "expected": 0 }
-      ]
-    },
-    {
-      "id": "code-23",
-      "topic_id": "js-20",
-      "difficulty": "medium",
-      "title": "`get(object, path, defaultValue)`",
-      "prompt": "Write `get(object, path, defaultValue)`. `path` is a string like `\"a.b.c\"`, where a number means an array index, like `\"list.0.name\"`. Return the value at that path, or `defaultValue` if any step along the way is missing. Real falsy values like `0`, `false`, `\"\"` and `null` are returned as they are.",
-      "starter_code": "function get(object, path, defaultValue) {\n  // Walk the path step by step; return defaultValue if a step is missing.\n}\n",
-      "solution": "function get(object, path, defaultValue) {\n  let current = object;\n  for (const key of path.split(\".\")) {\n    if (current === null || current === undefined) return defaultValue;\n    current = current[key];\n  }\n  return current === undefined ? defaultValue : current;\n}\n",
-      "explanation": "Split the path on dots and walk one key at a time. Before each step, if the current value is `null` or `undefined`, return the default, because reading a property of those would throw. At the end, use the default only for `undefined`, so real values like `0`, `false` and `null` come through. Array indexes work for free, because `list[\"0\"]` is the same as `list[0]`.",
-      "test_cases": [
-        { "name": "reads a nested value", "call": "get({ a: { b: { c: 3 } } }, \"a.b.c\")", "expected": 3 },
-        { "name": "a top-level key", "call": "get({ name: \"Ann\" }, \"name\")", "expected": "Ann" },
-        { "name": "a missing path gives the default", "call": "get({ a: {} }, \"a.b.c\", \"none\")", "expected": "none" },
-        { "name": "null in the middle gives the default", "call": "get({ a: null }, \"a.b\", \"none\")", "expected": "none" },
-        { "name": "array indexes", "call": "get({ list: [{ name: \"Ann\" }] }, \"list.0.name\")", "expected": "Ann" },
-        { "name": "falsy values are returned, not the default", "call": "[get({ a: 0 }, \"a\", 5), get({ a: false }, \"a\", true), get({ a: \"\" }, \"a\", \"x\")]", "expected": [0,false,""] },
-        { "name": "a null value is returned", "call": "get({ a: null }, \"a\", \"none\")", "expected": null },
-        { "name": "no default gives undefined", "call": "get({}, \"a.b\") === undefined", "expected": true }
-      ]
-    },
-    {
-      "id": "code-24",
-      "topic_id": "js-28",
-      "difficulty": "hard",
-      "title": "Run async tasks with a concurrency limit",
-      "prompt": "Write `runWithLimit(tasks, limit)`. `tasks` is an array of functions that each return a promise. Start them so that at most `limit` run at the same time, starting the next one as soon as one finishes. Resolve with all the results in input order, or reject as soon as any task fails.",
-      "starter_code": "function runWithLimit(tasks, limit) {\n  // Run at most `limit` tasks at once; resolve with results in input order.\n}\n",
-      "solution": "function runWithLimit(tasks, limit) {\n  return new Promise((resolve, reject) => {\n    const results = new Array(tasks.length);\n    let next = 0;\n    let done = 0;\n    if (tasks.length === 0) return resolve([]);\n\n    function startNext() {\n      if (next >= tasks.length) return;\n      const i = next++;\n      Promise.resolve()\n        .then(tasks[i])\n        .then((value) => {\n          results[i] = value;\n          done++;\n          if (done === tasks.length) resolve(results);\n          else startNext();\n        }, reject);\n    }\n\n    for (let k = 0; k < Math.min(limit, tasks.length); k++) startNext();\n  });\n}\n",
-      "explanation": "Start `limit` tasks at once through a `startNext` function. Each run takes the next index, runs that task, stores the result at its index, and then calls `startNext` again, so a new task starts as soon as one finishes. When the finished count equals the number of tasks, resolve; pass `reject` so the first failure rejects. Storing by index keeps the results in input order, even though tasks finish in any order.",
-      "test_cases": [
-        { "name": "results in input order", "call": "(() => { let running = 0; let max = 0; const task = (ms, v) => async () => { running++; max = Math.max(max, running); await new Promise((r) => setTimeout(r, ms)); running--; return v; }; return runWithLimit([task(30, \"a\"), task(10, \"b\"), task(20, \"c\")], 2); })()", "expected": ["a","b","c"] },
-        { "name": "never more than the limit at once", "call": "(async () => { let running = 0; let max = 0; const task = (ms, v) => async () => { running++; max = Math.max(max, running); await new Promise((r) => setTimeout(r, ms)); running--; return v; }; await runWithLimit([task(20, 1), task(20, 2), task(20, 3), task(20, 4), task(20, 5)], 2); return max; })()", "expected": 2 },
-        { "name": "a limit of 1 runs one at a time", "call": "(async () => { let running = 0; let max = 0; const task = (ms, v) => async () => { running++; max = Math.max(max, running); await new Promise((r) => setTimeout(r, ms)); running--; return v; }; await runWithLimit([task(10, 1), task(10, 2), task(10, 3)], 1); return max; })()", "expected": 1 },
-        { "name": "a limit bigger than the number of tasks", "call": "(() => { let running = 0; let max = 0; const task = (ms, v) => async () => { running++; max = Math.max(max, running); await new Promise((r) => setTimeout(r, ms)); running--; return v; }; return runWithLimit([task(10, 1), task(10, 2)], 5); })()", "expected": [1,2] },
-        { "name": "empty list", "call": "runWithLimit([], 3)", "expected": [] },
-        { "name": "runs in parallel up to the limit", "call": "(async () => { let running = 0; let max = 0; const task = (ms, v) => async () => { running++; max = Math.max(max, running); await new Promise((r) => setTimeout(r, ms)); running--; return v; }; const start = Date.now(); await runWithLimit([task(40, 1), task(40, 2), task(40, 3), task(40, 4)], 2); const ms = Date.now() - start; return ms >= 70 && ms < 150; })()", "expected": true },
-        { "name": "rejects when a task fails", "call": "runWithLimit([() => Promise.resolve(1), () => Promise.reject(new Error(\"bad\"))], 2).then(() => \"resolved\", (e) => e.message)", "expected": "bad" }
-      ]
-    },
-    {
-      "id": "code-25",
-      "topic_id": "js-36",
-      "difficulty": "hard",
-      "title": "`debounce` with `leading`, `trailing` and `cancel`",
-      "prompt": "Write `debounce(fn, delay, { leading = false, trailing = true } = {})`. With `leading`, call `fn` at the start of a burst of calls. With `trailing`, call it with the latest arguments once calls stop for `delay` ms. With both, a single call runs `fn` only once. Also give the returned function a `cancel()` method that drops any pending call.",
-      "starter_code": "function debounce(fn, delay, options = {}) {\n  // options: { leading = false, trailing = true }. Also add debounced.cancel().\n}\n",
-      "solution": "function debounce(fn, delay, { leading = false, trailing = true } = {}) {\n  let timer = null;\n  let pendingArgs = null;\n  let pendingThis = null;\n\n  function debounced(...args) {\n    const callNow = leading && timer === null;\n    pendingArgs = args;\n    pendingThis = this;\n    clearTimeout(timer);\n    timer = setTimeout(() => {\n      timer = null;\n      if (trailing && pendingArgs) fn.apply(pendingThis, pendingArgs);\n      pendingArgs = null;\n    }, delay);\n    if (callNow) {\n      pendingArgs = null;\n      fn.apply(this, args);\n    }\n  }\n\n  debounced.cancel = () => {\n    clearTimeout(timer);\n    timer = null;\n    pendingArgs = null;\n  };\n  return debounced;\n}\n",
-      "explanation": "Keep the timer and the latest arguments waiting for a trailing call. On each call, work out `callNow = leading && timer === null`: no timer means this call starts a new burst. Always restart the timer, and when it fires, make the trailing call only if `trailing` is on and arguments are still waiting. If the leading call ran, clear the waiting arguments, so a single call does not run twice. `cancel` clears both the timer and the waiting arguments.",
-      "test_cases": [
-        { "name": "trailing by default", "call": "(async () => { const wait = (ms) => new Promise((r) => setTimeout(r, ms)); const calls = []; const d = debounce((x) => calls.push(x), 20); d(1); d(2); d(3); await wait(60); return calls; })()", "expected": [3] },
-        { "name": "leading only runs right away, once per burst", "call": "(async () => { const wait = (ms) => new Promise((r) => setTimeout(r, ms)); const calls = []; const d = debounce((x) => calls.push(x), 20, { leading: true, trailing: false }); d(1); d(2); d(3); const rightAway = [...calls]; await wait(60); return [rightAway, calls]; })()", "expected": [[1],[1]] },
-        { "name": "leading and trailing run at both ends", "call": "(async () => { const wait = (ms) => new Promise((r) => setTimeout(r, ms)); const calls = []; const d = debounce((x) => calls.push(x), 20, { leading: true, trailing: true }); d(1); d(2); d(3); await wait(60); return calls; })()", "expected": [1,3] },
-        { "name": "a single call with leading and trailing runs once", "call": "(async () => { const wait = (ms) => new Promise((r) => setTimeout(r, ms)); const calls = []; const d = debounce((x) => calls.push(x), 20, { leading: true, trailing: true }); d(1); await wait(60); return calls; })()", "expected": [1] },
-        { "name": "a new burst runs leading again", "call": "(async () => { const wait = (ms) => new Promise((r) => setTimeout(r, ms)); const calls = []; const d = debounce((x) => calls.push(x), 20, { leading: true, trailing: false }); d(1); await wait(50); d(2); await wait(50); return calls; })()", "expected": [1,2] },
-        { "name": "cancel drops the pending call", "call": "(async () => { const wait = (ms) => new Promise((r) => setTimeout(r, ms)); const calls = []; const d = debounce((x) => calls.push(x), 20); d(1); d.cancel(); await wait(50); return calls; })()", "expected": [] },
-        { "name": "works again after cancel", "call": "(async () => { const wait = (ms) => new Promise((r) => setTimeout(r, ms)); const calls = []; const d = debounce((x) => calls.push(x), 20); d(1); d.cancel(); d(2); await wait(50); return calls; })()", "expected": [2] }
-      ]
-    },
-    {
-      "id": "code-26",
-      "topic_id": "js-37",
-      "difficulty": "hard",
-      "title": "An LRU cache using `Map`",
-      "prompt": "Write a class `LRUCache` with `constructor(capacity)`, `get(key)` and `put(key, value)`. `get` returns the value, or `-1` if the key is missing, and marks the key as recently used. `put` adds or updates a key and marks it as recently used. When the cache is over capacity, remove the least recently used key. Tip: a `Map` remembers insertion order.",
-      "starter_code": "class LRUCache {\n  constructor(capacity) {}\n\n  get(key) {}\n\n  put(key, value) {}\n}\n",
-      "solution": "class LRUCache {\n  constructor(capacity) {\n    this.capacity = capacity;\n    this.map = new Map();\n  }\n\n  get(key) {\n    if (!this.map.has(key)) return -1;\n    const value = this.map.get(key);\n    this.map.delete(key);\n    this.map.set(key, value);\n    return value;\n  }\n\n  put(key, value) {\n    this.map.delete(key);\n    this.map.set(key, value);\n    if (this.map.size > this.capacity) this.map.delete(this.map.keys().next().value);\n  }\n}\n",
-      "explanation": "A `Map` keeps its keys in insertion order, so the first key is always the least recently used one. On `get`, delete the key and set it again, which moves it to the end. On `put`, do the same, and if the size is now over capacity, delete `map.keys().next().value`, the oldest key. Every operation is O(1). Without a `Map`, the classic answer is a hash map plus a doubly linked list.",
-      "test_cases": [
-        { "name": "stores and reads a value", "call": "(() => { const c = new LRUCache(2); c.put(\"a\", 1); return c.get(\"a\"); })()", "expected": 1 },
-        { "name": "a missing key gives -1", "call": "new LRUCache(2).get(\"x\")", "expected": -1 },
-        { "name": "removes the least recently used key", "call": "(() => { const c = new LRUCache(2); c.put(\"a\", 1); c.put(\"b\", 2); c.put(\"c\", 3); return [c.get(\"a\"), c.get(\"b\"), c.get(\"c\")]; })()", "expected": [-1,2,3] },
-        { "name": "get makes a key recently used", "call": "(() => { const c = new LRUCache(2); c.put(\"a\", 1); c.put(\"b\", 2); c.get(\"a\"); c.put(\"c\", 3); return [c.get(\"a\"), c.get(\"b\")]; })()", "expected": [1,-1] },
-        { "name": "put on an existing key updates it and makes it recent", "call": "(() => { const c = new LRUCache(2); c.put(\"a\", 1); c.put(\"b\", 2); c.put(\"a\", 10); c.put(\"c\", 3); return [c.get(\"a\"), c.get(\"b\"), c.get(\"c\")]; })()", "expected": [10,-1,3] },
-        { "name": "capacity 1", "call": "(() => { const c = new LRUCache(1); c.put(\"a\", 1); c.put(\"b\", 2); return [c.get(\"a\"), c.get(\"b\")]; })()", "expected": [-1,2] },
-        { "name": "the LeetCode example", "call": "(() => { const c = new LRUCache(2); const out = []; c.put(1, 1); c.put(2, 2); out.push(c.get(1)); c.put(3, 3); out.push(c.get(2)); c.put(4, 4); out.push(c.get(1), c.get(3), c.get(4)); return out; })()", "expected": [1,-1,-1,3,4] }
-      ]
-    },
-    {
-      "id": "code-27",
-      "topic_id": "js-26",
-      "difficulty": "hard",
-      "title": "A simple `Promise` class",
-      "prompt": "Write a class `MyPromise` with `constructor(executor)`, `then(onFulfilled, onRejected)` and `catch(onRejected)`, without wrapping the built-in `Promise`. It settles only once. An error thrown in the executor rejects it. `then` returns a new `MyPromise`, runs its callbacks asynchronously, passes on values and errors it has no callback for, and waits for a promise returned by a callback.",
-      "starter_code": "class MyPromise {\n  constructor(executor) {}\n\n  then(onFulfilled, onRejected) {}\n\n  catch(onRejected) {}\n}\n",
-      "solution": "class MyPromise {\n  constructor(executor) {\n    this.state = \"pending\";\n    this.value = undefined;\n    this.handlers = [];\n    let locked = false;\n\n    const settle = (state, value) => {\n      if (this.state !== \"pending\") return;\n      this.state = state;\n      this.value = value;\n      this.handlers.forEach((run) => run());\n      this.handlers = [];\n    };\n    const resolve = (value) => {\n      if (locked) return;\n      locked = true;\n      if (value && typeof value.then === \"function\") {\n        value.then(\n          (v) => { locked = false; resolve(v); },\n          (e) => settle(\"rejected\", e),\n        );\n      } else {\n        settle(\"fulfilled\", value);\n      }\n    };\n    const reject = (reason) => {\n      if (locked) return;\n      locked = true;\n      settle(\"rejected\", reason);\n    };\n\n    try {\n      executor(resolve, reject);\n    } catch (error) {\n      reject(error);\n    }\n  }\n\n  then(onFulfilled, onRejected) {\n    return new MyPromise((resolve, reject) => {\n      const run = () => {\n        queueMicrotask(() => {\n          const fulfilled = this.state === \"fulfilled\";\n          const handler = fulfilled ? onFulfilled : onRejected;\n          if (typeof handler !== \"function\") {\n            (fulfilled ? resolve : reject)(this.value);\n            return;\n          }\n          try {\n            resolve(handler(this.value));\n          } catch (error) {\n            reject(error);\n          }\n        });\n      };\n      if (this.state === \"pending\") this.handlers.push(run);\n      else run();\n    });\n  }\n\n  catch(onRejected) {\n    return this.then(undefined, onRejected);\n  }\n}\n",
-      "explanation": "Store a state (`pending`, `fulfilled` or `rejected`), a value, and a list of waiting handlers. `resolve` and `reject` change the state only once and then run the waiting handlers; if `resolve` gets a thenable, it waits for it first. `then` returns a new `MyPromise` and runs its callback in a microtask with `queueMicrotask`, so it is always asynchronous. The callback's return value resolves the new promise, a thrown error rejects it, and with no matching callback the value or error is passed straight on.",
-      "test_cases": [
-        { "name": "then gets the value", "call": "new MyPromise((resolve) => resolve(5)).then((v) => v * 2)", "expected": 10 },
-        { "name": "chains then calls", "call": "new MyPromise((resolve) => resolve(1)).then((v) => v + 1).then((v) => v * 10)", "expected": 20 },
-        { "name": "catch gets the rejection", "call": "new MyPromise((_, reject) => reject(new Error(\"no\"))).catch((e) => e.message)", "expected": "no" },
-        { "name": "an error thrown in the executor rejects", "call": "new MyPromise(() => { throw new Error(\"boom\"); }).catch((e) => e.message)", "expected": "boom" },
-        { "name": "an error in then skips to catch", "call": "new MyPromise((r) => r(1)).then(() => { throw new Error(\"in then\"); }).then(() => \"skipped\").catch((e) => e.message)", "expected": "in then" },
-        { "name": "settles only once", "call": "new MyPromise((resolve, reject) => { resolve(1); resolve(2); reject(new Error(\"x\")); }).then((v) => v, () => \"rejected\")", "expected": 1 },
-        { "name": "then callbacks run asynchronously", "call": "(async () => { const wait = (ms) => new Promise((r) => setTimeout(r, ms)); const log = []; new MyPromise((r) => r()).then(() => log.push(\"then\")); log.push(\"sync\"); await wait(10); return log; })()", "expected": ["sync","then"] },
-        { "name": "waits for a promise returned from then", "call": "new MyPromise((r) => r(1)).then((v) => new MyPromise((r) => setTimeout(() => r(v + 1), 10)))", "expected": 2 }
-      ]
-    },
-    {
-      "id": "code-28",
-      "topic_id": "js-16",
-      "difficulty": "hard",
-      "title": "`deepClone` that handles circular references",
-      "prompt": "Write `deepClone(value)` for plain objects and arrays that also handles circular references, like an object that points to itself. Objects that are shared inside the original must stay shared in the copy. Tip: remember what you have already copied, for example in a `WeakMap`.",
-      "starter_code": "function deepClone(value) {\n  // Copy every level, and reuse copies for objects you have already seen.\n}\n",
-      "solution": "function deepClone(value, seen = new WeakMap()) {\n  if (value === null || typeof value !== \"object\") return value;\n  if (seen.has(value)) return seen.get(value);\n  const copy = Array.isArray(value) ? [] : {};\n  seen.set(value, copy);\n  for (const key of Object.keys(value)) copy[key] = deepClone(value[key], seen);\n  return copy;\n}\n",
-      "explanation": "Use the same recursion as the basic `deepClone`, plus a `WeakMap` from each original object to its copy. Before copying an object, check the map: if it was already copied, return that copy. Store the new copy in the map before copying its children; that is what stops the endless loop for an object that contains itself. It also keeps shared objects shared in the copy.",
-      "test_cases": [
-        { "name": "an object that points to itself", "call": "(() => { const a = { name: \"a\" }; a.self = a; const c = deepClone(a); return [c !== a, c.self === c, c.name]; })()", "expected": [true,true,"a"] },
-        { "name": "two objects that point to each other", "call": "(() => { const a = {}; const b = { a }; a.b = b; const c = deepClone(a); return [c.b.a === c, c.b !== b]; })()", "expected": [true,true] },
-        { "name": "an array that contains itself", "call": "(() => { const arr = [1]; arr.push(arr); const c = deepClone(arr); return [c[1] === c, c[0], c !== arr]; })()", "expected": [true,1,true] },
-        { "name": "shared objects stay shared", "call": "(() => { const shared = { n: 1 }; const o = { x: shared, y: shared }; const c = deepClone(o); return [c.x === c.y, c.x !== shared]; })()", "expected": [true,true] },
-        { "name": "nested copies are independent", "call": "(() => { const o = { a: { b: 1 } }; const c = deepClone(o); c.a.b = 2; return o.a.b; })()", "expected": 1 },
-        { "name": "primitives and null", "call": "[deepClone(5), deepClone(null), deepClone(\"s\")]", "expected": [5,null,"s"] }
-      ]
-    },
-    {
-      "id": "code-29",
-      "topic_id": "js-20",
-      "difficulty": "hard",
-      "title": "`flattenObject(obj)`",
-      "prompt": "Write `flattenObject(obj)`. Turn nested plain objects into one level, with keys joined by dots: `{ a: { b: 1 } }` becomes `{ \"a.b\": 1 }`. Arrays and `null` are kept as values, not flattened. An empty nested object adds no keys. Do not change the input.",
-      "starter_code": "function flattenObject(obj) {\n  // Return one flat object with dotted keys.\n}\n",
-      "solution": "function flattenObject(obj, prefix = \"\", out = {}) {\n  for (const [key, value] of Object.entries(obj)) {\n    const path = prefix ? prefix + \".\" + key : key;\n    if (value !== null && typeof value === \"object\" && !Array.isArray(value)) flattenObject(value, path, out);\n    else out[path] = value;\n  }\n  return out;\n}\n",
-      "explanation": "Walk the entries with a `prefix` that holds the path so far. If a value is a plain object, not `null` and not an array, call `flattenObject` on it with the longer prefix; otherwise write it to the result under the dotted path. An empty nested object has no entries, so it adds nothing. Passing one shared `out` object through the recursion means you never have to merge results.",
-      "test_cases": [
-        { "name": "one level of nesting", "call": "flattenObject({ a: { b: 1 } })", "expected": {"a.b":1} },
-        { "name": "empty object", "call": "flattenObject({})", "expected": {} },
-        { "name": "deep nesting next to a flat key", "call": "flattenObject({ a: { b: { c: { d: 1 } } }, e: 2 })", "expected": {"a.b.c.d":1,"e":2} },
-        { "name": "an already flat object", "call": "flattenObject({ x: 1, y: \"two\" })", "expected": {"x":1,"y":"two"} },
-        { "name": "arrays are kept as values", "call": "flattenObject({ a: { list: [1, 2] } })", "expected": {"a.list":[1,2]} },
-        { "name": "null is kept as a value", "call": "flattenObject({ a: { b: null } })", "expected": {"a.b":null} },
-        { "name": "an empty nested object adds no keys", "call": "flattenObject({ a: {}, b: 1 })", "expected": {"b":1} },
-        { "name": "does not change the input", "call": "(() => { const o = { a: { b: 1 } }; flattenObject(o); return o; })()", "expected": {"a":{"b":1}} }
-      ]
-    },
-    {
-      "id": "code-30",
-      "topic_id": "js-41",
-      "difficulty": "hard",
-      "title": "A small `createStore`, like Redux",
-      "prompt": "Write `createStore(reducer, initialState)`. It returns a store with `getState()`, `dispatch(action)` and `subscribe(listener)`. `dispatch` sets the state to `reducer(state, action)`, calls every listener, and returns the action. `subscribe` returns a function that removes that listener.",
-      "starter_code": "function createStore(reducer, initialState) {\n  // Return { getState, dispatch, subscribe }.\n}\n",
-      "solution": "function createStore(reducer, initialState) {\n  let state = initialState;\n  let listeners = [];\n  return {\n    getState: () => state,\n    dispatch(action) {\n      state = reducer(state, action);\n      listeners.forEach((listener) => listener());\n      return action;\n    },\n    subscribe(listener) {\n      listeners.push(listener);\n      return () => {\n        listeners = listeners.filter((l) => l !== listener);\n      };\n    },\n  };\n}\n",
-      "explanation": "Keep `state` and a list of listeners in a closure. `getState` returns the current state, and `dispatch` replaces it with `reducer(state, action)`, calls every listener, and returns the action. `subscribe` adds a listener and returns a function that filters it out again. This is the core of Redux: the reducer decides the new state, and the store only holds it and tells the UI.",
-      "test_cases": [
-        { "name": "getState returns the initial state", "call": "(() => { const counter = (state, action) => (action.type === \"add\" ? state + action.by : state); return createStore(counter, 5).getState(); })()", "expected": 5 },
-        { "name": "dispatch updates the state", "call": "(() => { const counter = (state, action) => (action.type === \"add\" ? state + action.by : state); const store = createStore(counter, 5); store.dispatch({ type: \"add\", by: 2 }); store.dispatch({ type: \"add\", by: 2 }); return store.getState(); })()", "expected": 9 },
-        { "name": "an unknown action keeps the state", "call": "(() => { const counter = (state, action) => (action.type === \"add\" ? state + action.by : state); const store = createStore(counter, 5); store.dispatch({ type: \"other\" }); return store.getState(); })()", "expected": 5 },
-        { "name": "listeners run after each dispatch and see the new state", "call": "(() => { const counter = (state, action) => (action.type === \"add\" ? state + action.by : state); const store = createStore(counter, 5); const seen = []; store.subscribe(() => seen.push(store.getState())); store.dispatch({ type: \"add\", by: 1 }); store.dispatch({ type: \"add\", by: 2 }); return seen; })()", "expected": [6,8] },
-        { "name": "unsubscribe stops a listener", "call": "(() => { const counter = (state, action) => (action.type === \"add\" ? state + action.by : state); const store = createStore(counter, 0); let n = 0; const unsubscribe = store.subscribe(() => n++); store.dispatch({ type: \"add\", by: 1 }); unsubscribe(); store.dispatch({ type: \"add\", by: 1 }); return n; })()", "expected": 1 },
-        { "name": "dispatch returns the action", "call": "(() => { const counter = (state, action) => (action.type === \"add\" ? state + action.by : state); return createStore(counter, 0).dispatch({ type: \"add\", by: 1 }); })()", "expected": {"type":"add","by":1} },
-        { "name": "works with object state", "call": "(() => { const todos = (state, action) => (action.type === \"add\" ? { ...state, items: [...state.items, action.text] } : state); const store = createStore(todos, { items: [] }); store.dispatch({ type: \"add\", text: \"a\" }); store.dispatch({ type: \"add\", text: \"b\" }); return store.getState().items; })()", "expected": ["a","b"] }
       ]
     }
   ]

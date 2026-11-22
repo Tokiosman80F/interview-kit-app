@@ -87,39 +87,25 @@
               "reference_url": "https://javascript.info/closure"
             },
             {
-              "id": "js-10",
-              "position": 3,
-              "title": "Closures in loops",
-              "interview_question": "Why does a `var` loop with `setTimeout` print the same number? How do you fix it?",
-              "reference_url": "https://javascript.info/closure"
-            },
-            {
               "id": "js-11",
-              "position": 4,
+              "position": 3,
               "title": "`this`",
               "interview_question": "What decides the value of `this`? What is it inside an arrow function?",
               "reference_url": "https://javascript.info/object-methods"
             },
             {
               "id": "js-12",
-              "position": 5,
+              "position": 4,
               "title": "`call`, `apply`, `bind`",
               "interview_question": "What does each do? When would you use `bind`?",
               "reference_url": "https://javascript.info/call-apply-decorators"
             },
             {
               "id": "js-13",
-              "position": 6,
+              "position": 5,
               "title": "Higher-order functions",
               "interview_question": "What is a higher-order function? Give examples from arrays",
               "reference_url": "https://javascript.info/array-methods"
-            },
-            {
-              "id": "js-14",
-              "position": 7,
-              "title": "Currying and partial application",
-              "interview_question": "What is currying, and why is it useful?",
-              "reference_url": "https://javascript.info/currying-partials"
             }
           ]
         },
@@ -169,20 +155,6 @@
               "title": "Classes and `new`",
               "interview_question": "What does `new` do step by step? Are classes just prototypes underneath?",
               "reference_url": "https://javascript.info/class"
-            },
-            {
-              "id": "js-20",
-              "position": 7,
-              "title": "Object methods",
-              "interview_question": "What do `Object.keys`, `entries`, `freeze` and `fromEntries` do? Is `freeze` deep?",
-              "reference_url": "https://javascript.info/keys-values-entries"
-            },
-            {
-              "id": "js-21",
-              "position": 8,
-              "title": "Getters, setters and property descriptors",
-              "interview_question": "What is a getter? What does `Object.defineProperty` control?",
-              "reference_url": "https://javascript.info/property-descriptors"
             }
           ]
         },
@@ -192,43 +164,29 @@
           "title": "Async JavaScript",
           "topics": [
             {
-              "id": "js-22",
-              "position": 1,
-              "title": "Synchronous vs asynchronous code",
-              "interview_question": "Why is JavaScript single-threaded but still non-blocking?",
-              "reference_url": "https://javascript.info/callbacks"
-            },
-            {
               "id": "js-23",
-              "position": 2,
+              "position": 1,
               "title": "The event loop",
               "interview_question": "Explain the call stack, task queue and event loop step by step",
               "reference_url": "https://javascript.info/event-loop"
             },
             {
               "id": "js-24",
-              "position": 3,
+              "position": 2,
               "title": "Microtasks vs macrotasks",
               "interview_question": "Why does a resolved promise run before `setTimeout(fn, 0)`?",
               "reference_url": "https://javascript.info/microtask-queue"
             },
             {
-              "id": "js-25",
-              "position": 4,
-              "title": "Callbacks and callback hell",
-              "interview_question": "What problems do nested callbacks cause?",
-              "reference_url": "https://javascript.info/callbacks"
-            },
-            {
               "id": "js-26",
-              "position": 5,
+              "position": 3,
               "title": "Promises",
               "interview_question": "What are the three states? How does chaining with `.then` work?",
               "reference_url": "https://javascript.info/promise-basics"
             },
             {
               "id": "js-27",
-              "position": 6,
+              "position": 4,
               "title": "`async` and `await`",
               "interview_question": "How does `await` work? How do you handle errors with it?",
               "reference_url": "https://javascript.info/async-await"
@@ -238,18 +196,18 @@
               "title": "Error handling in async code",
               "interview_question": "How do you catch errors with `await`? Why does `fetch` not throw on a 404? What is an unhandled rejection, and how do you write a custom error class?",
               "reference_url": "https://javascript.info/promise-error-handling",
-              "position": 7
+              "position": 5
             },
             {
               "id": "js-28",
-              "position": 8,
+              "position": 6,
               "title": "`Promise.all`, `allSettled`, `race`, `any`",
               "interview_question": "What is the difference? When does each one reject?",
               "reference_url": "https://javascript.info/promise-api"
             },
             {
               "id": "js-29",
-              "position": 9,
+              "position": 7,
               "title": "Cancelling requests",
               "interview_question": "How do you cancel a `fetch`? What is a race condition in search?",
               "reference_url": "https://javascript.info/fetch-abort"
@@ -283,25 +241,25 @@
               "reference_url": "https://javascript.info/localstorage"
             },
             {
-              "id": "js-33",
+              "id": "js-50",
               "position": 4,
+              "title": "CORS and the same-origin policy",
+              "interview_question": "What is the same-origin policy? How does CORS let a page call an API on another origin, and what is a preflight request?",
+              "reference_url": "https://javascript.info/fetch-crossorigin"
+            },
+            {
+              "id": "js-33",
+              "position": 5,
               "title": "How the browser renders a page",
               "interview_question": "What happens from typing a URL to seeing the page? What are reflow and repaint?",
               "reference_url": "https://javascript.info/onload-ondomcontentloaded"
             },
             {
               "id": "js-34",
-              "position": 5,
+              "position": 6,
               "title": "Script loading",
               "interview_question": "What is the difference between `async` and `defer`?",
               "reference_url": "https://javascript.info/script-async-defer"
-            },
-            {
-              "id": "js-35",
-              "position": 6,
-              "title": "DOM APIs",
-              "interview_question": "How do you select, create and update elements without a framework?",
-              "reference_url": "https://javascript.info/modifying-document"
             }
           ]
         },
@@ -339,60 +297,11 @@
               "reference_url": "https://javascript.info/garbage-collection"
             },
             {
-              "id": "js-40",
-              "position": 5,
-              "title": "Iterators and generators",
-              "interview_question": "What is an iterator? What does `yield` do?",
-              "reference_url": "https://javascript.info/generators"
-            },
-            {
               "id": "js-41",
-              "position": 6,
+              "position": 5,
               "title": "Immutability and pure functions",
               "interview_question": "What is a pure function? Why do Redux reducers have to be pure?",
               "reference_url": "https://javascript.info/object-copy"
-            }
-          ]
-        },
-        {
-          "id": "js-l7",
-          "number": 7,
-          "title": "Output prediction",
-          "topics": [
-            {
-              "id": "js-42",
-              "position": 1,
-              "title": "Hoisting",
-              "interview_question": "What does this print: `console.log(a); var a = 1;`, and the same with `let`?",
-              "reference_url": "https://javascript.info/var"
-            },
-            {
-              "id": "js-43",
-              "position": 2,
-              "title": "Closures in loops",
-              "interview_question": "What does this print: `for (var i = 0; i < 3; i++) setTimeout(() => console.log(i));`? And with `let`?",
-              "reference_url": "https://javascript.info/closure"
-            },
-            {
-              "id": "js-44",
-              "position": 3,
-              "title": "Event loop order",
-              "interview_question": "What does this print: `console.log(1); setTimeout(() => console.log(2)); Promise.resolve().then(() => console.log(3)); console.log(4);`?",
-              "reference_url": "https://javascript.info/microtask-queue"
-            },
-            {
-              "id": "js-45",
-              "position": 4,
-              "title": "Losing `this`",
-              "interview_question": "What does `const greet = user.greet; greet();` return, where `greet` returns `this.name`?",
-              "reference_url": "https://javascript.info/bind"
-            },
-            {
-              "id": "js-46",
-              "position": 5,
-              "title": "Coercion and numbers",
-              "interview_question": "What do `[] + []`, `[] + {}` and `0.1 + 0.2 === 0.3` give?",
-              "reference_url": "https://javascript.info/number"
             }
           ]
         }
