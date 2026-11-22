@@ -6,6 +6,10 @@ import { RichText } from "@/components/rich-text";
 import { NotesBox } from "@/components/notes-box";
 import { startQuiz } from "./actions";
 import explanations from "@/content/explain.json";
+import links from "@/content/links.json";
+
+// Extra reading links per topic, shown next to the javascript.info link.
+const extraLinks: Record<string, { label: string; url: string }[]> = links;
 
 // Cheat-sheet lines that have a static explanation page in public/explain/.
 const explainLinks: Record<string, string> = explanations;
@@ -54,9 +58,16 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
         </div>
       </div>
 
-      <a href={topicRes.data.reference_url} target="_blank" rel="noreferrer" className="link link-primary">
-        Read the javascript.info chapter
-      </a>
+      <div className="flex flex-wrap gap-x-6 gap-y-2">
+        <a href={topicRes.data.reference_url} target="_blank" rel="noreferrer" className="link link-primary">
+          Read the javascript.info chapter
+        </a>
+        {(extraLinks[id] ?? []).map((l) => (
+          <a key={l.url} href={l.url} target="_blank" rel="noreferrer" className="link link-primary">
+            {l.label}
+          </a>
+        ))}
+      </div>
 
       <div className="card bg-base-100 shadow">
         <div className="card-body p-4 sm:p-6">
