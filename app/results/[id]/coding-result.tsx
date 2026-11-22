@@ -5,22 +5,36 @@ import { PASS_MARK } from "@/lib/scoring/unlock";
 import type { TestResult } from "@/lib/runner/run";
 import { CodeBlock, RichText } from "@/components/rich-text";
 
+type Review = { mistakes: string[]; edge_cases: string[]; suggestion: string; approach: string };
+
 type Answer = {
   response: string | null;
-  feedback: { tests: TestResult[] } | null;
+  feedback: { tests: TestResult[]; review?: Review } | null;
+  graded_by: string | null;
   question: { id: string; title: string; correct_answer: string | null; explanation: string | null };
 };
 
-export async function CodingResult({ supabase, testId, score }: { supabase: SupabaseClient; testId: string; score: number }) {
+export async function CodingResult({
+  supabase,
+  testId,
+  score,
+  waiting,
+}: {
+  supabase: SupabaseClient;
+  testId: string;
+  score: number;
+  waiting: boolean;
+}) {
   const [{ data }, { ladder, open }] = await Promise.all([
     supabase
       .from("answers")
-      .select("response, feedback, question:questions!inner(id, title, correct_answer, explanation)")
+      .select("response, feedback, graded_by, question:questions!inner(id, title, correct_answer, explanation)")
       .eq("test_id", testId)
       .single(),
     codingProgress(supabase),
   ]);
-  const { response, feedback, question: q } = data as unknown as Answer;
+  const { response, feedback, graded_by: gradedBy, question: q } = data as unknown as Answer;
+  const review = feedback?.review;
   const tests = feedback?.tests ?? [];
   const passed = tests.filter((t) => t.passed).length;
   const next = ladder[ladder.findIndex((p) => p.id === q.id) + 1];
@@ -70,6 +84,39 @@ export async function CodingResult({ supabase, testId, score }: { supabase: Supa
         </div>
       </div>
 
+      <div className="card bg-base-100 shadow">
+        <div className="card-body p-4 sm:p-6 gap-3">
+          <h2 className="card-title text-base">AI review</h2>
+          {review ? (
+            <>
+              <ReviewList title="Mistakes" items={review.mistakes} tone="text-warning" />
+              <ReviewList title="Edge cases not handled" items={review.edge_cases} tone="text-error" />
+              {review.suggestion && (
+                <div className="bg-base-200 rounded-box p-3">
+                  <p className="font-semibold">One suggestion</p>
+                  <p>
+                    <RichText text={review.suggestion} />
+                  </p>
+                </div>
+              )}
+              {review.mistakes.length === 0 && review.edge_cases.length === 0 && (
+                <p>No mistakes or missed edge cases found.</p>
+              )}
+              <p className="text-xs text-base-content/50">
+                Reviewed by {gradedBy === "gemini" ? "Gemini" : "Groq"}. The review is feedback only; your score comes
+                from the tests.
+              </p>
+            </>
+          ) : (
+            <p className="text-base-content/60">
+              {waiting
+                ? "The AI reviewers are busy or unavailable. Open this page again later and the review will appear."
+                : "No review for this attempt."}
+            </p>
+          )}
+        </div>
+      </div>
+
       {q.correct_answer && (
         <details className="collapse collapse-arrow bg-base-100 shadow">
           <summary className="collapse-title font-semibold">Model solution and explanation</summary>
@@ -106,6 +153,22 @@ export async function CodingResult({ supabase, testId, score }: { supabase: Supa
           </Link>
         )}
       </div>
+    </div>
+  );
+}
+
+function ReviewList({ title, items, tone }: { title: string; items: string[]; tone: string }) {
+  if (items.length === 0) return null;
+  return (
+    <div>
+      <p className={"font-semibold " + tone}>{title}</p>
+      <ul className="list-disc pl-5">
+        {items.map((t) => (
+          <li key={t}>
+            <RichText text={t} />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

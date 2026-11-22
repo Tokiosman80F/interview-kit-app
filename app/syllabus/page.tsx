@@ -2,11 +2,14 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { TopicRow } from "@/lib/data";
 import { topicProgress } from "@/lib/progress";
+import { gradeWaitingTests } from "@/lib/grading/grade-test";
 import { PASS_MARK } from "@/lib/scoring/unlock";
 import { RichText } from "@/components/rich-text";
 
 export default async function SyllabusPage() {
   const supabase = await createClient();
+  // The retry: grade any test the AI could not grade before.
+  await gradeWaitingTests(supabase);
   const [{ topics, open: unlocked }, questions, notes, tests] = await Promise.all([
     topicProgress(supabase),
     supabase.from("questions").select("topic_id"),

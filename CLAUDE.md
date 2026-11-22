@@ -13,7 +13,7 @@ If a feature does not make the owner practise more or show a weak spot, do not b
 
 ## Current version
 
-**Version 2.** Build only what the current version lists, then stop. The owner uses each version for at least a week before asking for the next.
+**Version 3.** Build only what the current version lists, then stop. The owner uses each version for at least a week before asking for the next.
 
 | Version | Scope                                                                                                                              |
 | ------- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -140,6 +140,8 @@ All of this lives in `lib/scoring` as pure functions with Vitest tests.
 - Both providers get the same prompt: question, stored key points, the answer, and an instruction to grade only against the key points. Ask for JSON and validate it with Zod. On invalid JSON, treat it as a failure and fall back.
 - Response per answer: score (0 to 10), key points covered, key points missed, mistakes, short model answer (3 to 5 sentences), and for code: unhandled edge cases and one suggestion.
 - Save which provider graded each answer in `answers.graded_by`.
+- Both providers are called with plain `fetch` (no SDK): Gemini `generateContent` with `responseJsonSchema`, Groq chat completions with a strict `json_schema`. Default models: `gemini-3.1-flash-lite` and `openai/gpt-oss-120b`, overridden by `GEMINI_MODEL` and `GROQ_MODEL`.
+- `gradeTest()` in `lib/grading/grade-test.ts` grades a test's ungraded written and coding answers and sets the final score. It runs when a quiz is finished or code is submitted, and as the retry when the results or syllabus page loads. A blank or "I don't know" written answer scores 0 without an AI call. A written answer scoring 7/10 or more counts as correct.
 - API keys are only read on the server. Never import grading code into client components. Never send personal data in prompts.
 
 ## Code runner (version 2)
@@ -156,7 +158,7 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=     # seed script only, never in app code
 GEMINI_API_KEY=
-GEMINI_MODEL=                  # a Flash-Lite model by default
+GEMINI_MODEL=                  # empty = gemini-3.1-flash-lite
 GROQ_API_KEY=
 GROQ_MODEL=
 ```

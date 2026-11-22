@@ -164,16 +164,16 @@ Goal: on coding days, the owner writes the coding ladder functions in an editor 
 
 Goal: written answers and code get graded and reviewed by Gemini, with Groq as the fallback.
 
-- [ ] **OWNER:** Create a Gemini API key in Google AI Studio and a Groq API key in the Groq console. Put them, and the chosen model names, into `.env.local`.
-- [ ] `lib/grading/schema.ts`: Zod schema for the AI response, as described in CLAUDE.md.
-- [ ] `lib/grading/prompt.ts`: one prompt builder for all written and coding answers of a test.
-- [ ] `lib/grading/gemini.ts` and `lib/grading/groq.ts`, server only.
-- [ ] `gradeAnswers()`: Gemini first; on any error or invalid JSON, Groq; if both fail, return a failure. Never one request per answer.
-- [ ] Vitest tests for `gradeAnswers()` with both providers mocked: Gemini works; Gemini fails and Groq works; both fail; invalid JSON.
-- [ ] Add the 3 written questions to topic quizzes (now 15 questions, easy to hard). Written answers use a textarea.
-- [ ] Finishing a test with written or coding answers: save app-graded answers first, set status `waiting_for_grading`, call `gradeAnswers()`, then save scores, feedback and `graded_by`, and set status `graded`.
-- [ ] Retry: when the results page or the syllabus page loads and a test is `waiting_for_grading`, try grading it again.
-- [ ] Results page shows, for each written answer: score, key points covered and missed, mistakes, model answer. For code: edge cases and the suggestion. Show "Waiting for grading" when needed.
+- [x] **OWNER:** Create a Gemini API key in Google AI Studio and a Groq API key in the Groq console. Put them, and the chosen model names, into `.env.local`.
+- [x] `lib/grading/schema.ts`: Zod schema for the AI response, as described in CLAUDE.md.
+- [x] `lib/grading/prompt.ts`: one prompt builder for all written and coding answers of a test.
+- [x] `lib/grading/gemini.ts` and `lib/grading/groq.ts`, server only.
+- [x] `gradeAnswers()`: Gemini first; on any error or invalid JSON, Groq; if both fail, return a failure. Never one request per answer.
+- [x] Vitest tests for `gradeAnswers()` with both providers mocked: Gemini works; Gemini fails and Groq works; both fail; invalid JSON.
+- [x] Add the 3 written questions to topic quizzes (now 15 questions, easy to hard). Written answers use a textarea.
+- [x] Finishing a test with written or coding answers: save app-graded answers first, set status `waiting_for_grading`, call `gradeAnswers()`, then save scores, feedback and `graded_by`, and set status `graded`.
+- [x] Retry: when the results page or the syllabus page loads and a test is `waiting_for_grading`, try grading it again.
+- [x] Results page shows, for each written answer: score, key points covered and missed, mistakes, model answer. For code: edge cases and the suggestion. Show "Waiting for grading" when needed.
 - [ ] Version 3 check: lint, test, build, and an owner checklist (answer a written question well and badly, see different scores; remove the Gemini key and check that Groq grades; remove both keys and check "waiting for grading", then restore keys and see it graded).
 
 **STOP. Version 3 is done. Wait for the owner.**

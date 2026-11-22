@@ -110,6 +110,22 @@ export function TestRunner({
                 {DONT_KNOW}
               </button>
             </>
+          ) : q.type === "written" ? (
+            <>
+              <div className="font-semibold">
+                <RichText text={q.prompt} />
+              </div>
+              <textarea
+                className="textarea w-full min-h-40"
+                placeholder="Answer as you would in an interview, in your own words. It is graded by AI against the key points."
+                value={responses[index]}
+                onChange={(e) => type(e.target.value)}
+                onBlur={() => saveInBackground(index, responses[index])}
+              />
+              <button type="button" className="btn btn-ghost btn-sm self-start" onClick={() => choose(DONT_KNOW)}>
+                {DONT_KNOW}
+              </button>
+            </>
           ) : (
             <>
               <div className="font-semibold">
@@ -152,7 +168,7 @@ export function TestRunner({
         {last ? (
           <button className="btn btn-primary" disabled={pending} onClick={finish}>
             {pending && <span className="loading loading-spinner loading-sm" />}
-            Finish
+            {pending ? "Grading…" : "Finish"}
           </button>
         ) : (
           <button className="btn btn-primary" disabled={pending} onClick={() => go(index + 1)}>

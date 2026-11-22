@@ -8,7 +8,8 @@ export function easyToHard<T extends { difficulty: Difficulty }>(questions: T[])
   return [...questions].sort((a, b) => rank[a.difficulty] - rank[b.difficulty]);
 }
 
-// Version 1: multiple choice and output only. Written questions join in version 3.
+// All 15 quiz questions of a topic: multiple choice, output and written.
+// Coding problems are practised on the coding ladder, not in topic quizzes.
 export function buildTopicQuiz<T extends { type: string; difficulty: Difficulty }>(questions: T[]): T[] {
-  return easyToHard(questions.filter((q) => q.type === "mcq" || q.type === "output"));
+  return easyToHard(questions.filter((q) => q.type !== "coding"));
 }

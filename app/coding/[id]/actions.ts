@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { gradeCoding, testScore } from "@/lib/scoring/grade";
 import { codingProgress } from "@/lib/progress";
+import { gradeTest } from "@/lib/grading/grade-test";
 
 const resultsSchema = z.array(
   z.object({ name: z.string(), passed: z.boolean(), expected: z.string(), actual: z.string() }),
@@ -34,8 +35,9 @@ export async function submitCoding(questionId: string, code: string, rawResults:
       topic_id: question.topic_id,
       started_at: new Date(startedAt).toISOString(),
       finished_at: new Date().toISOString(),
+      // The tests give the score now; the AI review is added by gradeTest.
       score: testScore([score]),
-      status: "graded",
+      status: "waiting_for_grading",
     })
     .select("id")
     .single();
@@ -48,9 +50,10 @@ export async function submitCoding(questionId: string, code: string, rawResults:
     score,
     is_correct: score === 1,
     feedback: { tests: results },
-    graded_by: "app",
   });
   if (answerError) throw new Error(answerError.message);
+
+  await gradeTest(supabase, test.id);
 
   redirect(`/results/${test.id}`);
 }
