@@ -13,7 +13,7 @@ If a feature does not make the owner practise more or show a weak spot, do not b
 
 ## Current version
 
-**Version 3.** Build only what the current version lists, then stop. The owner uses each version for at least a week before asking for the next.
+**Version 4.** Build only what the current version lists, then stop. The owner uses each version for at least a week before asking for the next.
 
 | Version | Scope                                                                                                                              |
 | ------- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -115,7 +115,10 @@ Seven tables. Anything that can be calculated (unlocked levels, weak topics, str
 - Questions in every test are ordered easy to hard.
 - Exams pick questions in this order: ones the owner got wrong, then ones not answered for the longest time.
 - The level exam becomes available once every topic in the level has a quiz score.
-- Level 1 is always unlocked.
+- Level 1 is always unlocked. A topic in a later level also needs its level unlocked (`lib/progress.ts` combines the topic rule below with the level rule).
+- The review exam is due 3 days after the last review (or after the first finished quiz) and overdue one day later (`REVIEW_GRACE_HOURS`); only overdue locks topic quizzes. Review questions come from topics with a graded quiz.
+- A level without a medium or hard coding problem uses an easy one; a level with no coding problem fills that slot with a multiple choice or output question. `completeTest()` in `lib/complete-test.ts` finishes every quiz and exam; an exam whose time ran out is finished on the next load of its test page.
+- `now()` in `lib/now.ts` is the clock for exam rules. In development only, `DEV_NOW` in `.env.local` overrides it to test the 3-day and 24-hour rules.
 - Topics unlock in syllabus order: the first topic is always open, and each next topic opens only when the one before it has a best quiz score of 50% or more (`PASS_MARK` in `lib/scoring/unlock.ts`). The first locked topic locks everything after it, across levels.
 - The coding ladder unlocks the same way: the next problem opens when the previous one has a submit that passed at least 50% of its tests.
 - The coding timer stops at 0:00 and shows "Time is up"; "New timer" restarts it without clearing the code.
@@ -163,6 +166,7 @@ GEMINI_API_KEY=
 GEMINI_MODEL=                  # empty = gemini-3.1-flash-lite
 GROQ_API_KEY=
 GROQ_MODEL=
+DEV_NOW=                       # development only: pretend it is this time (ISO date) to test exam rules
 ```
 
 Keep `.env.example` up to date. Never commit `.env.local`.

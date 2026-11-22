@@ -17,8 +17,9 @@ export async function saveNote(topicId: string, body: string) {
 // Resumes an unfinished quiz for the topic, or starts a new one.
 export async function startQuiz(topicId: string) {
   const supabase = await createClient();
-  const { open: unlocked } = await topicProgress(supabase);
-  if (!unlocked.has(topicId)) redirect(`/topic/${topicId}`);
+  const { open: unlocked, review } = await topicProgress(supabase);
+  // Locked topic, or an overdue review exam: the topic page explains why.
+  if (!unlocked.has(topicId) || review.overdue) redirect(`/topic/${topicId}`);
 
   const { data: open } = await supabase
     .from("tests")

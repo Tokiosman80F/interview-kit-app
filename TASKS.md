@@ -184,12 +184,12 @@ Goal: written answers and code get graded and reviewed by Gemini, with Groq as t
 
 Goal: the full exam system, with unlocking and the 3-day review.
 
-- [ ] `lib/selection`: level exam (15 questions: 8 multiple choice, 3 output, 3 written, 1 coding; medium and hard only; from the level's topics) and review exam (10 questions: about 6 from weak topics, 4 random; 6 multiple choice or output, 3 written, 1 coding; mixed difficulty). Both prefer questions answered wrong, then ones not answered for the longest time. Order easy to hard.
-- [ ] `lib/scoring`: level unlocked, level exam available, retake allowed (24 hours after a fail), review due (3 days after the last review), review overdue, weak topics.
-- [ ] Vitest tests for every rule above, with fixed dates.
-- [ ] Timer on the test page for exams (40 minutes for level, 30 for review). When time runs out, the test is finished with the answers given.
-- [ ] Level exam button on the syllabus page when available. Locked levels show a lock and what is needed to unlock them.
-- [ ] Review exam: a clear banner when due. While overdue, starting a topic quiz is blocked with a message and a button to the review exam.
+- [x] `lib/selection`: level exam (15 questions: 8 multiple choice, 3 output, 3 written, 1 coding; medium and hard only; from the level's topics) and review exam (10 questions: about 6 from weak topics, 4 random; 6 multiple choice or output, 3 written, 1 coding; mixed difficulty). Both prefer questions answered wrong, then ones not answered for the longest time. Order easy to hard.
+- [x] `lib/scoring`: level unlocked, level exam available, retake allowed (24 hours after a fail), review due (3 days after the last review), review overdue, weak topics.
+- [x] Vitest tests for every rule above, with fixed dates.
+- [x] Timer on the test page for exams (40 minutes for level, 30 for review). When time runs out, the test is finished with the answers given.
+- [x] Level exam button on the syllabus page when available. Locked levels show a lock and what is needed to unlock them.
+- [x] Review exam: a clear banner when due. While overdue, starting a topic quiz is blocked with a message and a button to the review exam.
 - [ ] Version 4 check: lint, test, build, and an owner checklist (use a temporary date override in development to test the 3-day and 24-hour rules, then remove it).
 
 **STOP. Version 4 is done. Wait for the owner.**

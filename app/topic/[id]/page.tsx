@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { topicProgress } from "@/lib/progress";
 import { PASS_MARK } from "@/lib/scoring/unlock";
+import { LEVEL_PASS_MARK } from "@/lib/scoring/exams";
+import { ReviewBanner } from "@/components/review-banner";
 import { RichText } from "@/components/rich-text";
 import { NotesBox } from "@/components/notes-box";
 import { startQuiz } from "./actions";
@@ -18,7 +20,7 @@ const explainLinks: Record<string, string> = explanations;
 export default async function TopicPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
-  const [{ topics, best, open }, topicRes, noteRes, countRes, writtenRes, codingRes] = await Promise.all([
+  const [{ topics, best, open, levels, review }, topicRes, noteRes, countRes, writtenRes, codingRes] = await Promise.all([
     topicProgress(supabase),
     supabase.from("topics").select("interview_question, reference_url").eq("id", id).maybeSingle(),
     supabase.from("notes").select("body").eq("topic_id", id).maybeSingle(),
@@ -37,6 +39,32 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
   const topic = topics[i];
   const prev = topics[i - 1];
   const next = topics[i + 1];
+
+  const levelIndex = levels.findIndex((l) => l.id === topic.level.id);
+  if (!levels[levelIndex]?.unlocked) {
+    const previous = levels[levelIndex - 1];
+    return (
+      <div className="card bg-base-100 shadow">
+        <div className="card-body p-4 sm:p-6 gap-3">
+          <p className="text-sm text-base-content/60">
+            Level {topic.level.number}: {topic.level.title} · Topic {topic.position}
+          </p>
+          <h1 className="text-2xl font-bold">
+            <RichText text={topic.title} />
+          </h1>
+          <div role="alert" className="alert">
+            <span>
+              Level {topic.level.number} is locked. Score {LEVEL_PASS_MARK}% or more on the Level {previous?.number} exam
+              to open it.
+            </span>
+          </div>
+          <Link href="/syllabus" className="btn btn-primary self-start">
+            Go to the syllabus
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!open.has(id)) {
     // The first locked topic is the one after the last topic you passed.
@@ -128,7 +156,9 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
         </details>
       )}
 
-      {countRes.count ? (
+      {review.overdue ? (
+        <ReviewBanner review={review} />
+      ) : countRes.count ? (
         <form action={startQuiz.bind(null, id)}>
           <button className="btn btn-primary btn-block">Start quiz</button>
         </form>

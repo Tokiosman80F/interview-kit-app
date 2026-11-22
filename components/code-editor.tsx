@@ -13,10 +13,13 @@ const theme = EditorView.theme({
 });
 
 // CodeMirror 6 with JavaScript highlighting and Tab to indent.
-// The editor owns its text; to replace it (Reset), change this component's key.
+// The editor owns its text and reads `initial` only when it first mounts; to
+// replace the text (Reset, or another question), change this component's key.
 export function CodeEditor({ initial, onChange }: { initial: string; onChange: (code: string) => void }) {
   const parent = useRef<HTMLDivElement>(null);
   const latestOnChange = useRef(onChange);
+  // Read once: later changes to `initial` (the live text) must not rebuild the editor.
+  const startText = useRef(initial);
 
   useEffect(() => {
     latestOnChange.current = onChange;
@@ -24,7 +27,7 @@ export function CodeEditor({ initial, onChange }: { initial: string; onChange: (
 
   useEffect(() => {
     const view = new EditorView({
-      doc: initial,
+      doc: startText.current,
       parent: parent.current!,
       extensions: [
         basicSetup,
@@ -37,7 +40,7 @@ export function CodeEditor({ initial, onChange }: { initial: string; onChange: (
       ],
     });
     return () => view.destroy();
-  }, [initial]);
+  }, []);
 
   return <div ref={parent} className="rounded-box border border-base-300 overflow-hidden bg-base-100" />;
 }

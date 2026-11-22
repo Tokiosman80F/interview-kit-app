@@ -7,12 +7,15 @@ import { testItems, type TestItem } from "@/lib/test-questions";
 import { gradeTest } from "@/lib/grading/grade-test";
 import { CodeBlock, RichText } from "@/components/rich-text";
 import { CodingResult } from "./coding-result";
+import { LEVEL_PASS_MARK } from "@/lib/scoring/exams";
+import { formatWhen } from "@/components/review-banner";
+import type { TestResult } from "@/lib/runner/run";
 
 export default async function ResultsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
   const loadTest = async () =>
-    (await supabase.from("tests").select("kind, status, score, topic_id").eq("id", id).maybeSingle()).data;
+    (await supabase.from("tests").select("kind, status, score, topic_id, level:levels(id, number, title)").eq("id", id).maybeSingle()).data;
   let test = await loadTest();
   if (!test) notFound();
   // The retry: the AI was unavailable last time, so try grading again now.
@@ -22,7 +25,11 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
     return <CodingResult supabase={supabase} testId={id} score={Number(test.score)} waiting={waiting} />;
   if (test.status === "in_progress") redirect(`/test/${id}`);
 
-  const [items, { topics, open }] = await Promise.all([testItems(supabase, id), topicProgress(supabase)]);
+  const [items, { topics, open, levels }] = await Promise.all([testItems(supabase, id), topicProgress(supabase)]);
+  const level = test.level as unknown as { id: string; number: number; title: string } | null;
+  const levelState = levels.find((l) => l.id === level?.id);
+  const nextLevel = levels.find((l) => level && l.number === level.number + 1);
+  const passed = !waiting && Number(test.score) >= LEVEL_PASS_MARK;
   const i = topics.findIndex((t) => t.id === test.topic_id);
   const topic = topics[i];
   const next = topics[i + 1];
@@ -32,11 +39,17 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
     <div className="flex flex-col gap-4">
       <div className="card bg-base-100 shadow">
         <div className="card-body p-4 sm:p-6 items-center text-center">
-          {topic && (
-            <p className="text-base-content/60">
-              Quiz: <RichText text={topic.title} />
-            </p>
-          )}
+          <p className="text-base-content/60">
+            {test.kind === "review" ? (
+              "Review exam"
+            ) : test.kind === "level_exam" && level ? (
+              `Level ${level.number} exam: ${level.title}`
+            ) : topic ? (
+              <>
+                Quiz: <RichText text={topic.title} />
+              </>
+            ) : null}
+          </p>
           {waiting ? (
             <p className="text-2xl font-bold">Waiting for grading</p>
           ) : (
@@ -45,6 +58,15 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
           <p>
             {right} of {items.length} correct{waiting && " so far"}
           </p>
+          {test.kind === "level_exam" && !waiting && (
+            <p className={`font-semibold ${passed ? "text-success" : "text-error"}`}>
+              {passed
+                ? nextLevel
+                  ? `Passed. Level ${nextLevel.number} is now open.`
+                  : "Passed. You have finished the last level."
+                : `Not passed yet: you need ${LEVEL_PASS_MARK}%.${levelState?.retakeAt ? ` You can retake it from ${formatWhen(levelState.retakeAt)}.` : ""}`}
+            </p>
+          )}
         </div>
       </div>
       {waiting && (
@@ -65,13 +87,19 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
                 <span className={`badge ${score === null ? "badge-ghost" : is_correct ? "badge-success" : "badge-error"}`}>
                   {score === null ? "Waiting" : `${Math.round(Number(score) * 10)}/10`}
                 </span>
+              ) : q.type === "coding" ? (
+                <span className={`badge ${is_correct ? "badge-success" : "badge-error"}`}>
+                  {Math.round(Number(score ?? 0) * 100)}% of tests
+                </span>
               ) : (
                 <span className={`badge ${is_correct ? "badge-success" : "badge-error"}`}>
                   {is_correct ? "Right" : "Wrong"}
                 </span>
               )}
             </div>
-            {q.type === "output" ? (
+            {q.type === "coding" ? (
+              <CodingAnswerView title={q.title ?? ""} code={response ?? ""} feedback={feedback as CodingFeedback | null} waiting={waiting} />
+            ) : q.type === "output" ? (
               <>
                 <p className="font-semibold">What does this code print?</p>
                 <CodeBlock code={q.prompt} />
@@ -81,11 +109,13 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
                 <RichText text={q.prompt} />
               </div>
             )}
-            <p>
-              <span className="text-base-content/60">Your answer: </span>
-              {response ? <RichText text={response} /> : <em>no answer</em>}
-            </p>
-            {q.type === "written" ? (
+            {q.type !== "coding" && (
+              <p>
+                <span className="text-base-content/60">Your answer: </span>
+                {response ? <RichText text={response} /> : <em>no answer</em>}
+              </p>
+            )}
+            {q.type === "coding" ? null : q.type === "written" ? (
               feedback && <WrittenFeedbackView feedback={feedback} gradedBy={graded_by} />
             ) : !is_correct && (
               <>
@@ -119,6 +149,11 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
         {next && !open.has(next.id) && (
           <p className="text-base-content/60 self-center">Score {PASS_MARK}% or more to open the next topic.</p>
         )}
+        {!topic && (
+          <Link href="/syllabus" className="btn btn-primary">
+            Back to the syllabus
+          </Link>
+        )}
       </div>
     </div>
   );
@@ -151,6 +186,55 @@ function WrittenFeedbackView({ feedback, gradedBy }: { feedback: NonNullable<Tes
       </div>
       {gradedBy && gradedBy !== "app" && (
         <p className="text-xs text-base-content/50">Graded by {gradedBy === "gemini" ? "Gemini" : "Groq"}</p>
+      )}
+    </div>
+  );
+}
+
+type CodingFeedback = {
+  tests?: TestResult[];
+  review?: { mistakes: string[]; edge_cases: string[]; suggestion: string };
+};
+
+// The coding question of an exam: your code, the tests, and the AI review.
+function CodingAnswerView({ title, code, feedback, waiting }: { title: string; code: string; feedback: CodingFeedback | null; waiting: boolean }) {
+  const tests = feedback?.tests ?? [];
+  const review = feedback?.review;
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="font-semibold">
+        <RichText text={title} />
+      </p>
+      <CodeBlock code={code || "// no answer"} />
+      {tests.length === 0 ? (
+        <p className="text-base-content/60">The tests did not run, so this answer scores 0.</p>
+      ) : (
+        <ul className="text-sm flex flex-col gap-1">
+          {tests.map((t) => (
+            <li key={t.name} className={t.passed ? "text-success" : "text-error"}>
+              {t.passed ? "✓" : "✗"} {t.name}
+              {!t.passed && <span className="font-mono break-all"> (expected {t.expected}, got {t.actual})</span>}
+            </li>
+          ))}
+        </ul>
+      )}
+      {review ? (
+        <div className="bg-base-200 rounded-box p-3 flex flex-col gap-2">
+          <p className="font-semibold">AI review</p>
+          {[...review.mistakes, ...review.edge_cases].map((m) => (
+            <p key={m}>
+              • <RichText text={m} />
+            </p>
+          ))}
+          {review.suggestion && (
+            <p>
+              <span className="font-semibold">Suggestion: </span>
+              <RichText text={review.suggestion} />
+            </p>
+          )}
+        </div>
+      ) : (
+        waiting && <p className="text-base-content/60">The AI review will appear once grading is done.</p>
       )}
     </div>
   );

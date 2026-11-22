@@ -18,7 +18,7 @@ export type TestItem = {
 export async function testItems(supabase: SupabaseClient, testId: string): Promise<TestItem[]> {
   const { data, error } = await supabase
     .from("answers")
-    .select("response, is_correct, score, feedback, graded_by, question:questions!inner(id, type, difficulty, prompt, options, correct_answer, explanation)")
+    .select("response, is_correct, score, feedback, graded_by, question:questions!inner(id, type, difficulty, prompt, options, correct_answer, explanation, title, starter_code, test_cases)")
     .eq("test_id", testId);
   if (error) throw new Error(error.message);
   const items = (data as unknown as TestItem[]).sort((a, b) => a.question.id.localeCompare(b.question.id));

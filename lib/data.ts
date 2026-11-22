@@ -25,4 +25,8 @@ export type QuizQuestion = {
   options: string[] | null;
   correct_answer: string | null;
   explanation: string | null;
+  // Coding questions only (they appear in exams).
+  title?: string | null;
+  starter_code?: string | null;
+  test_cases?: { name: string; call: string; expected: unknown }[] | null;
 };
