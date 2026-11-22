@@ -114,6 +114,9 @@ Seven tables. Anything that can be calculated (unlocked levels, weak topics, str
 - Exams pick questions in this order: ones the owner got wrong, then ones not answered for the longest time.
 - The level exam becomes available once every topic in the level has a quiz score.
 - Level 1 is always unlocked.
+- Topics unlock in syllabus order: the first topic is always open, and each next topic opens only when the one before it has a best quiz score of 50% or more (`PASS_MARK` in `lib/scoring/unlock.ts`). The first locked topic locks everything after it, across levels.
+- The coding ladder unlocks the same way: the next problem opens when the previous one has a submit that passed at least 50% of its tests.
+- The coding timer stops at 0:00 and shows "Time is up"; "New timer" restarts it without clearing the code.
 
 ## Scoring
 

@@ -50,18 +50,25 @@ export function CodingRunner({
   const [editorStart, setEditorStart] = useState(draft.code);
   const [editorKey, setEditorKey] = useState(0);
   const [startedAt, setStartedAt] = useState(draft.startedAt);
-  const [now, setNow] = useState(draft.startedAt);
+  const [now, setNow] = useState(() => Math.min(Date.now(), draft.startedAt + minutes * 60 * 1000));
   const [results, setResults] = useState<(TestResult | null)[]>(() => tests.map(() => null));
   const [running, setRunning] = useState(false);
   const [submitting, startSubmit] = useTransition();
   const [error, setError] = useState("");
 
+  // Tick once a second until the time is up, then stop: the clock freezes at 0:00.
+  const endsAt = startedAt + minutes * 60 * 1000;
   useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
+    const id = setInterval(() => {
+      const t = Date.now();
+      setNow(Math.min(t, endsAt));
+      if (t >= endsAt) clearInterval(id);
+    }, 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [endsAt]);
 
-  const left = minutes * 60 * 1000 - (now - startedAt);
+  const left = Math.max(0, endsAt - now);
+  const timeUp = left === 0;
   const passed = results.filter((r) => r?.passed).length;
   const busy = running || submitting;
 
@@ -111,17 +118,32 @@ export function CodingRunner({
     setResults(tests.map(() => null));
   }
 
+  // Coming back another day: start a fresh countdown but keep the code.
+  function newTimer() {
+    const t = Date.now();
+    writeDraft(key, { code, startedAt: t });
+    setStartedAt(t);
+    setNow(t);
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-2">
-        <span className={`badge ${left < 0 ? "badge-warning" : "badge-ghost"} font-mono`}>
-          {left < 0 ? `Over by ${clock(left)}` : `${clock(left)} left`}
+        <span className={`badge ${timeUp ? "badge-warning" : "badge-ghost"} font-mono`}>
+          {timeUp ? "Time is up" : `${clock(left)} left`}
         </span>
-        <button type="button" className="btn btn-ghost btn-sm" onClick={reset} disabled={busy}>
-          Reset
-        </button>
+        <div className="flex gap-1">
+          {timeUp && (
+            <button type="button" className="btn btn-ghost btn-sm" onClick={newTimer} disabled={busy}>
+              New timer
+            </button>
+          )}
+          <button type="button" className="btn btn-ghost btn-sm" onClick={reset} disabled={busy}>
+            Reset
+          </button>
+        </div>
       </div>
-      {left < 0 && (
+      {timeUp && (
         <div role="alert" className="alert alert-warning">
           Your {minutes} minutes are up. Finish if you are close, then submit. If not, read the model solution on the
           results page and write it again from memory tomorrow.

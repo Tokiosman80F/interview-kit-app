@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { topicsInOrder, type TopicRow } from "@/lib/data";
+import type { TopicRow } from "@/lib/data";
+import { topicProgress } from "@/lib/progress";
+import { PASS_MARK } from "@/lib/scoring/unlock";
 import { RichText } from "@/components/rich-text";
 
 export default async function SyllabusPage() {
   const supabase = await createClient();
-  const [topics, questions, notes, tests] = await Promise.all([
-    topicsInOrder(supabase),
+  const [{ topics, open: unlocked }, questions, notes, tests] = await Promise.all([
+    topicProgress(supabase),
     supabase.from("questions").select("topic_id"),
     supabase.from("notes").select("topic_id, body"),
     supabase
@@ -34,7 +36,10 @@ export default async function SyllabusPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-bold">Syllabus</h1>
+      <div>
+        <h1 className="text-2xl font-bold">Syllabus</h1>
+        <p className="text-base-content/60">Score {PASS_MARK}% or more on a topic quiz to open the next topic.</p>
+      </div>
       {[...levels].map(([number, level]) => {
         const open = level.topics.some((t) => hasQuestions.has(t.id));
         return (
@@ -50,7 +55,7 @@ export default async function SyllabusPage() {
                   return (
                     <li key={t.id} className="list-row items-center px-0 sm:px-4">
                       <span className="text-base-content/50 w-6">{t.position}</span>
-                      {open ? (
+                      {open && unlocked.has(t.id) ? (
                         <Link href={`/topic/${t.id}`} className="link link-hover list-col-grow">
                           <RichText text={t.title} />
                         </Link>
@@ -60,7 +65,9 @@ export default async function SyllabusPage() {
                         </span>
                       )}
                       <span className="text-right">
-                        {s ? (
+                        {open && !unlocked.has(t.id) ? (
+                          <span className="badge badge-ghost whitespace-nowrap">Locked</span>
+                        ) : s ? (
                           <span className="badge badge-primary badge-outline whitespace-nowrap">
                             Best {Math.max(...s)}% · Last {s[s.length - 1]}%
                           </span>

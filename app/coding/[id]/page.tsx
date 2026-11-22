@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { codingLadder } from "@/lib/coding";
+import { codingProgress } from "@/lib/progress";
+import { PASS_MARK } from "@/lib/scoring/unlock";
 import type { TestCase } from "@/lib/runner/run";
 import { RichText } from "@/components/rich-text";
 import { CodingRunner } from "./coding-client";
@@ -9,8 +10,8 @@ import { CodingRunner } from "./coding-client";
 export default async function CodingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
-  const [ladder, { data: q }] = await Promise.all([
-    codingLadder(supabase),
+  const [{ ladder, best, open }, { data: q }] = await Promise.all([
+    codingProgress(supabase),
     supabase
       .from("questions")
       .select("title, prompt, difficulty, starter_code, test_cases, topic:topics!inner(id, title)")
@@ -22,6 +23,29 @@ export default async function CodingPage({ params }: { params: Promise<{ id: str
   const topic = q.topic as unknown as { id: string; title: string };
   const i = ladder.findIndex((p) => p.id === id);
   const next = ladder[i + 1];
+
+  if (!open.has(id)) {
+    const blocker = ladder[ladder.findIndex((p) => !open.has(p.id)) - 1];
+    return (
+      <div className="card bg-base-100 shadow">
+        <div className="card-body p-4 sm:p-6 gap-3">
+          <h1 className="text-2xl font-bold">
+            <RichText text={q.title} />
+          </h1>
+          <div role="alert" className="alert">
+            <span>
+              This problem is locked. Pass at least {PASS_MARK}% of the tests on <RichText text={blocker.title} /> to
+              open the next problem
+              {best.has(blocker.id) ? ` (your best so far is ${best.get(blocker.id)}%)` : ""}.
+            </span>
+          </div>
+          <Link href={`/coding/${blocker.id}`} className="btn btn-primary self-start">
+            Go to <RichText text={blocker.title} />
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -56,7 +80,7 @@ export default async function CodingPage({ params }: { params: Promise<{ id: str
         <Link href="/coding" className="btn btn-ghost btn-sm">
           ← Coding ladder
         </Link>
-        {next && (
+        {next && open.has(next.id) && (
           <Link href={`/coding/${next.id}`} className="btn btn-ghost btn-sm">
             <RichText text={next.title} /> →
           </Link>

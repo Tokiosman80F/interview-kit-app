@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { gradeCoding, testScore } from "@/lib/scoring/grade";
+import { codingProgress } from "@/lib/progress";
 
 const resultsSchema = z.array(
   z.object({ name: z.string(), passed: z.boolean(), expected: z.string(), actual: z.string() }),
@@ -14,6 +15,8 @@ const resultsSchema = z.array(
 export async function submitCoding(questionId: string, code: string, rawResults: unknown, startedAt: number) {
   const results = resultsSchema.parse(rawResults);
   const supabase = await createClient();
+  const { open } = await codingProgress(supabase);
+  if (!open.has(questionId)) throw new Error("This problem is locked");
   const { data: question } = await supabase
     .from("questions")
     .select("topic_id, test_cases")

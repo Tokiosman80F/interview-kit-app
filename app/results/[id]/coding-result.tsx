@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { codingLadder } from "@/lib/coding";
+import { codingProgress } from "@/lib/progress";
+import { PASS_MARK } from "@/lib/scoring/unlock";
 import type { TestResult } from "@/lib/runner/run";
 import { CodeBlock, RichText } from "@/components/rich-text";
 
@@ -11,13 +12,13 @@ type Answer = {
 };
 
 export async function CodingResult({ supabase, testId, score }: { supabase: SupabaseClient; testId: string; score: number }) {
-  const [{ data }, ladder] = await Promise.all([
+  const [{ data }, { ladder, open }] = await Promise.all([
     supabase
       .from("answers")
       .select("response, feedback, question:questions!inner(id, title, correct_answer, explanation)")
       .eq("test_id", testId)
       .single(),
-    codingLadder(supabase),
+    codingProgress(supabase),
   ]);
   const { response, feedback, question: q } = data as unknown as Answer;
   const tests = feedback?.tests ?? [];
@@ -93,7 +94,9 @@ export async function CodingResult({ supabase, testId, score }: { supabase: Supa
         <Link href={`/coding/${q.id}`} className="btn">
           Try again
         </Link>
-        {next ? (
+        {next && !open.has(next.id) ? (
+          <p className="text-base-content/60 self-center">Pass at least {PASS_MARK}% of the tests to open the next problem.</p>
+        ) : next ? (
           <Link href={`/coding/${next.id}`} className="btn btn-primary">
             Next problem →
           </Link>

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { topicsInOrder } from "@/lib/data";
+import { topicProgress } from "@/lib/progress";
+import { PASS_MARK } from "@/lib/scoring/unlock";
 import { RichText } from "@/components/rich-text";
 import { NotesBox } from "@/components/notes-box";
 import { startQuiz } from "./actions";
@@ -17,8 +18,8 @@ const explainLinks: Record<string, string> = explanations;
 export default async function TopicPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
-  const [topics, topicRes, noteRes, countRes, writtenRes, codingRes] = await Promise.all([
-    topicsInOrder(supabase),
+  const [{ topics, best, open }, topicRes, noteRes, countRes, writtenRes, codingRes] = await Promise.all([
+    topicProgress(supabase),
     supabase.from("topics").select("interview_question, reference_url").eq("id", id).maybeSingle(),
     supabase.from("notes").select("body").eq("topic_id", id).maybeSingle(),
     supabase
@@ -36,6 +37,33 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
   const topic = topics[i];
   const prev = topics[i - 1];
   const next = topics[i + 1];
+
+  if (!open.has(id)) {
+    // The first locked topic is the one after the last topic you passed.
+    const blocker = topics[topics.findIndex((t) => !open.has(t.id)) - 1];
+    return (
+      <div className="card bg-base-100 shadow">
+        <div className="card-body p-4 sm:p-6 gap-3">
+          <p className="text-sm text-base-content/60">
+            Level {topic.level.number}: {topic.level.title} · Topic {topic.position}
+          </p>
+          <h1 className="text-2xl font-bold">
+            <RichText text={topic.title} />
+          </h1>
+          <div role="alert" className="alert">
+            <span>
+              This topic is locked. Score {PASS_MARK}% or more on the <RichText text={blocker.title} /> quiz to open
+              the next topic
+              {best.has(blocker.id) ? ` (your best so far is ${best.get(blocker.id)}%)` : ""}.
+            </span>
+          </div>
+          <Link href={`/topic/${blocker.id}`} className="btn btn-primary self-start">
+            Go to <RichText text={blocker.title} />
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">

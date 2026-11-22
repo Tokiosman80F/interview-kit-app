@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { topicsInOrder } from "@/lib/data";
+import { topicProgress } from "@/lib/progress";
+import { PASS_MARK } from "@/lib/scoring/unlock";
 import { testItems } from "@/lib/test-questions";
 import { CodeBlock, RichText } from "@/components/rich-text";
 import { CodingResult } from "./coding-result";
@@ -18,7 +19,7 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
   if (test.kind === "coding") return <CodingResult supabase={supabase} testId={id} score={Number(test.score)} />;
   if (test.status === "in_progress") redirect(`/test/${id}`);
 
-  const [items, topics] = await Promise.all([testItems(supabase, id), topicsInOrder(supabase)]);
+  const [items, { topics, open }] = await Promise.all([testItems(supabase, id), topicProgress(supabase)]);
   const i = topics.findIndex((t) => t.id === test.topic_id);
   const topic = topics[i];
   const next = topics[i + 1];
@@ -89,10 +90,13 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
             Back to topic
           </Link>
         )}
-        {next && (
+        {next && open.has(next.id) && (
           <Link href={`/topic/${next.id}`} className="btn btn-primary">
             Next topic →
           </Link>
+        )}
+        {next && !open.has(next.id) && (
+          <p className="text-base-content/60 self-center">Score {PASS_MARK}% or more to open the next topic.</p>
         )}
       </div>
     </div>

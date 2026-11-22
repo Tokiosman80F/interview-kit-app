@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { buildTopicQuiz } from "@/lib/selection/topic-quiz";
 import type { QuizQuestion } from "@/lib/data";
+import { topicProgress } from "@/lib/progress";
 
 export async function saveNote(topicId: string, body: string) {
   const supabase = await createClient();
@@ -16,6 +17,9 @@ export async function saveNote(topicId: string, body: string) {
 // Resumes an unfinished quiz for the topic, or starts a new one.
 export async function startQuiz(topicId: string) {
   const supabase = await createClient();
+  const { open: unlocked } = await topicProgress(supabase);
+  if (!unlocked.has(topicId)) redirect(`/topic/${topicId}`);
+
   const { data: open } = await supabase
     .from("tests")
     .select("id")
