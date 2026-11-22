@@ -174,7 +174,7 @@ Goal: written answers and code get graded and reviewed by Gemini, with Groq as t
 - [x] Finishing a test with written or coding answers: save app-graded answers first, set status `waiting_for_grading`, call `gradeAnswers()`, then save scores, feedback and `graded_by`, and set status `graded`.
 - [x] Retry: when the results page or the syllabus page loads and a test is `waiting_for_grading`, try grading it again.
 - [x] Results page shows, for each written answer: score, key points covered and missed, mistakes, model answer. For code: edge cases and the suggestion. Show "Waiting for grading" when needed.
-- [ ] Version 3 check: lint, test, build, and an owner checklist (answer a written question well and badly, see different scores; remove the Gemini key and check that Groq grades; remove both keys and check "waiting for grading", then restore keys and see it graded).
+- [x] Version 3 check: lint, test, build, and an owner checklist (answer a written question well and badly, see different scores; remove the Gemini key and check that Groq grades; remove both keys and check "waiting for grading", then restore keys and see it graded).
 
 **STOP. Version 3 is done. Wait for the owner.**
 
