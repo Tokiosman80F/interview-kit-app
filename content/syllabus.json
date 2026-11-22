@@ -57,6 +57,13 @@
               "title": "`typeof`, `null` and `undefined`",
               "interview_question": "Why is `typeof null` equal to `\"object\"`? When do you get `null` vs `undefined`?",
               "reference_url": "https://javascript.info/types"
+            },
+            {
+              "id": "js-47",
+              "title": "`??` vs `||` and optional chaining",
+              "interview_question": "What does `count || 10` return when `count` is `0`, and how does `??` fix it? What does `user?.address?.city` do?",
+              "reference_url": "https://javascript.info/nullish-coalescing-operator",
+              "position": 8
             }
           ]
         },
@@ -136,36 +143,43 @@
               "reference_url": "https://javascript.info/object-copy"
             },
             {
+              "id": "js-48",
+              "title": "Array methods that mutate vs return a new array",
+              "interview_question": "Which array methods change the original array? What is the difference between `sort` and `toSorted`?",
+              "reference_url": "https://javascript.info/array-methods",
+              "position": 3
+            },
+            {
               "id": "js-17",
-              "position": 3,
+              "position": 4,
               "title": "Destructuring, spread and rest",
               "interview_question": "How do they work for objects, arrays and function arguments?",
               "reference_url": "https://javascript.info/destructuring-assignment"
             },
             {
               "id": "js-18",
-              "position": 4,
+              "position": 5,
               "title": "Prototypes and the prototype chain",
               "interview_question": "What is a prototype? How does property lookup work?",
               "reference_url": "https://javascript.info/prototype-inheritance"
             },
             {
               "id": "js-19",
-              "position": 5,
+              "position": 6,
               "title": "Classes and `new`",
               "interview_question": "What does `new` do step by step? Are classes just prototypes underneath?",
               "reference_url": "https://javascript.info/class"
             },
             {
               "id": "js-20",
-              "position": 6,
+              "position": 7,
               "title": "Object methods",
               "interview_question": "What do `Object.keys`, `entries`, `freeze` and `fromEntries` do? Is `freeze` deep?",
               "reference_url": "https://javascript.info/keys-values-entries"
             },
             {
               "id": "js-21",
-              "position": 7,
+              "position": 8,
               "title": "Getters, setters and property descriptors",
               "interview_question": "What is a getter? What does `Object.defineProperty` control?",
               "reference_url": "https://javascript.info/property-descriptors"
@@ -220,15 +234,22 @@
               "reference_url": "https://javascript.info/async-await"
             },
             {
+              "id": "js-49",
+              "title": "Error handling in async code",
+              "interview_question": "How do you catch errors with `await`? Why does `fetch` not throw on a 404? What is an unhandled rejection, and how do you write a custom error class?",
+              "reference_url": "https://javascript.info/promise-error-handling",
+              "position": 7
+            },
+            {
               "id": "js-28",
-              "position": 7,
+              "position": 8,
               "title": "`Promise.all`, `allSettled`, `race`, `any`",
               "interview_question": "What is the difference? When does each one reject?",
               "reference_url": "https://javascript.info/promise-api"
             },
             {
               "id": "js-29",
-              "position": 8,
+              "position": 9,
               "title": "Cancelling requests",
               "interview_question": "How do you cancel a `fetch`? What is a race condition in search?",
               "reference_url": "https://javascript.info/fetch-abort"

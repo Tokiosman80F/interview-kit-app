@@ -41,11 +41,16 @@ export default async function CodingPage({ params }: { params: Promise<{ id: str
           <p>
             <RichText text={q.prompt} />
           </p>
-          <p className="text-sm text-base-content/60">No AI and no looking it up. Run the tests as often as you like.</p>
+          <p className="text-sm text-base-content/60">No AI and no looking it up. You have {q.difficulty === "hard" ? 35 : 20} minutes. Run the tests as often as you like.</p>
         </div>
       </div>
 
-      <CodingRunner questionId={id} starter={q.starter_code} tests={q.test_cases as TestCase[]} />
+      <CodingRunner
+        questionId={id}
+        starter={q.starter_code}
+        tests={q.test_cases as TestCase[]}
+        minutes={q.difficulty === "hard" ? 35 : 20}
+      />
 
       <div className="flex justify-between gap-2">
         <Link href="/coding" className="btn btn-ghost btn-sm">

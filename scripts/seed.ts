@@ -60,7 +60,13 @@ const tracks = syllabus.data.tracks;
 const levels = tracks.flatMap((t) => t.levels.map((l) => ({ track: t.id, ...l })));
 await upsert("tracks", tracks.map(({ id, name }) => ({ id, name })));
 await upsert("levels", levels.map((l) => ({ id: l.id, track_id: l.track, number: l.number, title: l.title })));
-await upsert("topics", levels.flatMap((l) => l.topics.map((t) => ({ ...t, level_id: l.id }))));
+// Highest position first: when a new topic is inserted mid-level, the topics
+// after it move up by one, and each must move before the one below takes its
+// old place, because (level_id, position) is unique and checked row by row.
+await upsert(
+  "topics",
+  levels.flatMap((l) => l.topics.map((t) => ({ ...t, level_id: l.id }))).sort((a, b) => b.position - a.position),
+);
 await upsert(
   "questions",
   questions.map((q) => ({

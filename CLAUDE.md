@@ -69,7 +69,7 @@ scripts/seed.ts          loads content/ into Supabase
 | `/test/[id]`    | One page for topic quiz, level exam and review exam. One question at a time, timer      |
 | `/results/[id]` | Score, each answer with feedback and model answer, or "waiting for grading". For coding: tests, your code, model solution |
 | `/coding`       | Coding ladder: every coding problem in order with its best score                        |
-| `/coding/[id]`  | One coding problem: editor, 20 minute timer (warning only), Run tests, Submit           |
+| `/coding/[id]`  | One coding problem: editor, timer of 20 minutes or 35 for hard ones (warning only), Run tests, Submit |
 | `/mistakes`     | Every wrong answer, filterable by level and topic                                       |
 | `/history`      | All past tests with date, type and score                                                |
 | `/login`        | Supabase email login                                                                    |

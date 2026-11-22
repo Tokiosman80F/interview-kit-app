@@ -1,5 +1,11 @@
 {
   "js-4": [
     { "label": "ChatGPT explanation", "url": "https://chatgpt.com/share/6b02ce45-b8d8-83e8-83a7-db362b5875d2" }
+  ],
+  "js-47": [
+    { "label": "Optional chaining chapter", "url": "https://javascript.info/optional-chaining" }
+  ],
+  "js-49": [
+    { "label": "Custom errors chapter", "url": "https://javascript.info/custom-errors" }
   ]
 }

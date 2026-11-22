@@ -6,8 +6,6 @@ import { runInWorker } from "@/lib/runner/client";
 import type { TestCase, TestResult } from "@/lib/runner/run";
 import { submitCoding } from "@/app/coding/[id]/actions";
 
-const LIMIT_MS = 20 * 60 * 1000;
-
 type Draft = { code: string; startedAt: number };
 
 // The draft lives in localStorage so a refresh or a closed tab does not lose
@@ -39,10 +37,12 @@ export function CodingRunner({
   questionId,
   starter,
   tests,
+  minutes,
 }: {
   questionId: string;
   starter: string;
   tests: TestCase[];
+  minutes: number;
 }) {
   const key = `coding-draft:${questionId}`;
   const [draft] = useState(() => readDraft(key) ?? { code: starter, startedAt: Date.now() });
@@ -61,7 +61,7 @@ export function CodingRunner({
     return () => clearInterval(id);
   }, []);
 
-  const left = LIMIT_MS - (now - startedAt);
+  const left = minutes * 60 * 1000 - (now - startedAt);
   const passed = results.filter((r) => r?.passed).length;
   const busy = running || submitting;
 
@@ -123,7 +123,7 @@ export function CodingRunner({
       </div>
       {left < 0 && (
         <div role="alert" className="alert alert-warning">
-          Your 20 minutes are up. Finish if you are close, then submit. If not, read the model solution on the
+          Your {minutes} minutes are up. Finish if you are close, then submit. If not, read the model solution on the
           results page and write it again from memory tomorrow.
         </div>
       )}
