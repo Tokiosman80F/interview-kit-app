@@ -4,6 +4,10 @@ import { codingProgress } from "@/lib/progress";
 import { PASS_MARK } from "@/lib/scoring/unlock";
 import type { TestResult } from "@/lib/runner/run";
 import { CodeBlock, RichText } from "@/components/rich-text";
+import { Card, CardBody, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { BulletList } from "@/components/ui/bullet-list";
+import { Callout } from "@/components/ui/callout";
 
 type Review = { mistakes: string[]; edge_cases: string[]; suggestion: string; approach: string };
 
@@ -41,8 +45,8 @@ export async function CodingResult({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="card bg-base-100 shadow">
-        <div className="card-body p-4 sm:p-6 items-center text-center">
+      <Card>
+        <CardBody className="items-center text-center">
           <p className="text-base-content/60">
             Coding: <RichText text={q.title} />
           </p>
@@ -50,20 +54,18 @@ export async function CodingResult({
           <p>
             {passed} of {tests.length} tests passed
           </p>
-        </div>
-      </div>
+        </CardBody>
+      </Card>
 
-      <div className="card bg-base-100 shadow">
-        <div className="card-body p-4 sm:p-6 gap-2">
-          <h2 className="card-title text-base">Tests</h2>
+      <Card>
+        <CardBody className="gap-2">
+          <CardTitle className="text-base">Tests</CardTitle>
           <ul className="flex flex-col gap-2">
             {tests.map((t) => (
               <li key={t.name} className="rounded-box border border-base-300 p-3 flex flex-col gap-1">
                 <div className="flex justify-between gap-2">
                   <span className="font-medium">{t.name}</span>
-                  <span className={`badge ${t.passed ? "badge-success" : "badge-error"}`}>
-                    {t.passed ? "Pass" : "Fail"}
-                  </span>
+                  <Badge tone={t.passed ? "success" : "error"}>{t.passed ? "Pass" : "Fail"}</Badge>
                 </div>
                 {!t.passed && (
                   <div className="text-sm font-mono break-all">
@@ -74,30 +76,29 @@ export async function CodingResult({
               </li>
             ))}
           </ul>
-        </div>
-      </div>
+        </CardBody>
+      </Card>
 
-      <div className="card bg-base-100 shadow">
-        <div className="card-body p-4 sm:p-6 gap-2">
-          <h2 className="card-title text-base">Your code</h2>
+      <Card>
+        <CardBody className="gap-2">
+          <CardTitle className="text-base">Your code</CardTitle>
           <CodeBlock code={response ?? ""} />
-        </div>
-      </div>
+        </CardBody>
+      </Card>
 
-      <div className="card bg-base-100 shadow">
-        <div className="card-body p-4 sm:p-6 gap-3">
-          <h2 className="card-title text-base">AI review</h2>
+      <Card>
+        <CardBody className="gap-3">
+          <CardTitle className="text-base">AI review</CardTitle>
           {review ? (
             <>
-              <ReviewList title="Mistakes" items={review.mistakes} tone="text-warning" />
-              <ReviewList title="Edge cases not handled" items={review.edge_cases} tone="text-error" />
+              <BulletList title="Mistakes" items={review.mistakes} tone="warning" />
+              <BulletList title="Edge cases not handled" items={review.edge_cases} tone="error" />
               {review.suggestion && (
-                <div className="bg-base-200 rounded-box p-3">
-                  <p className="font-semibold">One suggestion</p>
+                <Callout title="One suggestion">
                   <p>
                     <RichText text={review.suggestion} />
                   </p>
-                </div>
+                </Callout>
               )}
               {review.mistakes.length === 0 && review.edge_cases.length === 0 && (
                 <p>No mistakes or missed edge cases found.</p>
@@ -114,8 +115,8 @@ export async function CodingResult({
                 : "No review for this attempt."}
             </p>
           )}
-        </div>
-      </div>
+        </CardBody>
+      </Card>
 
       {q.correct_answer && (
         <details className="collapse collapse-arrow bg-base-100 shadow">
@@ -125,12 +126,11 @@ export async function CodingResult({
               If you did not solve it, read this, then write it again from memory on your next coding day.
             </p>
             {q.explanation && (
-              <div className="bg-base-200 rounded-box p-3">
-                <p className="font-semibold">How it works</p>
+              <Callout title="How it works">
                 <p>
                   <RichText text={q.explanation} />
                 </p>
-              </div>
+              </Callout>
             )}
             <CodeBlock code={q.correct_answer} />
           </div>
@@ -153,22 +153,6 @@ export async function CodingResult({
           </Link>
         )}
       </div>
-    </div>
-  );
-}
-
-function ReviewList({ title, items, tone }: { title: string; items: string[]; tone: string }) {
-  if (items.length === 0) return null;
-  return (
-    <div>
-      <p className={"font-semibold " + tone}>{title}</p>
-      <ul className="list-disc pl-5">
-        {items.map((t) => (
-          <li key={t}>
-            <RichText text={t} />
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }

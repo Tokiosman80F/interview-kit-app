@@ -8,6 +8,9 @@ import { EXAM_MINUTES, LEVEL_PASS_MARK, RETAKE_HOURS } from "@/lib/scoring/exams
 import { startLevelExam } from "@/app/exam/actions";
 import { RichText } from "@/components/rich-text";
 import { ReviewBanner, formatWhen } from "@/components/review-banner";
+import { Card, CardBody, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/cn";
 
 export default async function SyllabusPage() {
   const supabase = await createClient();
@@ -43,16 +46,18 @@ export default async function SyllabusPage() {
       </div>
       <ReviewBanner review={review} />
       {levels.map((level, n) => (
-        <section key={level.id} className="card bg-base-100 shadow">
-          <div className="card-body p-4 sm:p-6">
+        <Card key={level.id}>
+          <CardBody>
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="card-title">
+              <CardTitle>
                 Level {level.number}: {level.title}
-              </h2>
+              </CardTitle>
               {!level.unlocked ? (
-                <span className="badge badge-ghost whitespace-nowrap">Locked</span>
+                <Badge>Locked</Badge>
               ) : level.passed ? (
-                <span className="badge badge-success badge-outline whitespace-nowrap">Exam passed · {level.bestExam}%</span>
+                <Badge tone="success" outline>
+                  Exam passed · {level.bestExam}%
+                </Badge>
               ) : null}
             </div>
             {!level.unlocked && (
@@ -78,15 +83,17 @@ export default async function SyllabusPage() {
                     )}
                     <span className="text-right">
                       {!open ? (
-                        <span className="badge badge-ghost whitespace-nowrap">Locked</span>
+                        <Badge>Locked</Badge>
                       ) : s ? (
-                        <span className="badge badge-primary badge-outline whitespace-nowrap">
+                        <Badge tone="primary" outline>
                           Best {Math.max(...s)}% · Last {s[s.length - 1]}%
-                        </span>
+                        </Badge>
                       ) : hasNote.has(t.id) || started.has(t.id) ? (
-                        <span className="badge badge-info badge-outline">Studied</span>
+                        <Badge tone="info" outline>
+                          Studied
+                        </Badge>
                       ) : (
-                        <span className="badge badge-ghost">Not started</span>
+                        <Badge>Not started</Badge>
                       )}
                     </span>
                   </li>
@@ -102,7 +109,7 @@ export default async function SyllabusPage() {
                       {level.bestExam !== null && ` Your best: ${level.bestExam}%.`}
                     </span>
                     <form action={startLevelExam.bind(null, level.id)}>
-                      <button className={`btn btn-sm ${level.passed ? "" : "btn-primary"}`}>
+                      <button className={cn("btn btn-sm", !level.passed && "btn-primary")}>
                         {level.passed ? "Retake level exam" : "Start level exam"}
                       </button>
                     </form>
@@ -119,8 +126,8 @@ export default async function SyllabusPage() {
                 )}
               </div>
             )}
-          </div>
-        </section>
+          </CardBody>
+        </Card>
       ))}
     </div>
   );

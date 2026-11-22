@@ -1,12 +1,13 @@
 import { startReview } from "@/app/exam/actions";
 import type { ReviewState } from "@/lib/scoring/exams";
 import { EXAM_MINUTES } from "@/lib/scoring/exams";
+import { Notice } from "@/components/ui/notice";
 
 // Shown when the review exam is due. Once it is overdue, topic quizzes are locked.
 export function ReviewBanner({ review }: { review: ReviewState }) {
   if (!review.due) return null;
   return (
-    <div role="alert" className={`alert ${review.overdue ? "alert-error" : "alert-warning"} flex flex-wrap`}>
+    <Notice tone={review.overdue ? "error" : "warning"} className="flex flex-wrap">
       <span className="flex-1">
         {review.overdue
           ? "Your review exam is overdue. Topic quizzes are locked until you take it."
@@ -15,7 +16,7 @@ export function ReviewBanner({ review }: { review: ReviewState }) {
       <form action={startReview}>
         <button className="btn btn-sm">Start review exam</button>
       </form>
-    </div>
+    </Notice>
   );
 }
 

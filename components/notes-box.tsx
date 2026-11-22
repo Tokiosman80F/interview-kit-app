@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/cn";
 import { saveNote } from "@/app/topic/[id]/actions";
 
 // Saves about 1 second after typing stops.
@@ -34,7 +35,7 @@ export function NotesBox({ topicId, initial }: { topicId: string; initial: strin
         value={body}
         onChange={(e) => onChange(e.target.value)}
       />
-      <span className={`text-sm ${status === "error" ? "text-error" : "text-base-content/60"}`}>
+      <span className={cn("text-sm", status === "error" ? "text-error" : "text-base-content/60")}>
         {{ saved: "Saved", typing: "Typing...", saving: "Saving...", error: "Not saved. Check your connection and type again." }[status]}
       </span>
     </div>

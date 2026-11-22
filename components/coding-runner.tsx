@@ -2,6 +2,9 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { CodeEditor } from "@/components/code-editor";
+import { Card, CardBody, CardTitle } from "@/components/ui/card";
+import { Notice } from "@/components/ui/notice";
+import { Badge } from "@/components/ui/badge";
 import { runInWorker } from "@/lib/runner/client";
 import type { TestCase, TestResult } from "@/lib/runner/run";
 import { submitCoding } from "@/app/coding/[id]/actions";
@@ -129,9 +132,9 @@ export function CodingRunner({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-2">
-        <span className={`badge ${timeUp ? "badge-warning" : "badge-ghost"} font-mono`}>
+        <Badge tone={timeUp ? "warning" : "ghost"} className="font-mono">
           {timeUp ? "Time is up" : `${clock(left)} left`}
-        </span>
+        </Badge>
         <div className="flex gap-1">
           {timeUp && (
             <button type="button" className="btn btn-ghost btn-sm" onClick={newTimer} disabled={busy}>
@@ -144,18 +147,16 @@ export function CodingRunner({
         </div>
       </div>
       {timeUp && (
-        <div role="alert" className="alert alert-warning">
+        <Notice tone="warning">
           Your {minutes} minutes are up. Finish if you are close, then submit. If not, read the model solution on the
           results page and write it again from memory tomorrow.
-        </div>
+        </Notice>
       )}
 
       <CodeEditor key={editorKey} initial={editorStart} onChange={edit} />
 
       {error && (
-        <div role="alert" className="alert alert-error">
-          {error}
-        </div>
+        <Notice tone="error">{error}</Notice>
       )}
 
       <div className="flex justify-between gap-2">
@@ -169,11 +170,11 @@ export function CodingRunner({
         </button>
       </div>
 
-      <div className="card bg-base-100 shadow">
-        <div className="card-body p-4 sm:p-6 gap-3">
-          <h2 className="card-title text-base">
+      <Card>
+        <CardBody className="gap-3">
+          <CardTitle className="text-base">
             Tests{results.some(Boolean) && `: ${passed} of ${tests.length} passed`}
-          </h2>
+          </CardTitle>
           <ul className="flex flex-col gap-2">
             {tests.map((t, i) => {
               const r = results[i];
@@ -182,9 +183,7 @@ export function CodingRunner({
                   <div className="flex justify-between gap-2">
                     <span className="font-medium">{t.name}</span>
                     {r && (
-                      <span className={`badge ${r.passed ? "badge-success" : "badge-error"}`}>
-                        {r.passed ? "Pass" : "Fail"}
-                      </span>
+                      <Badge tone={r.passed ? "success" : "error"}>{r.passed ? "Pass" : "Fail"}</Badge>
                     )}
                   </div>
                   <code className="text-sm break-all">{t.call}</code>
@@ -198,8 +197,8 @@ export function CodingRunner({
               );
             })}
           </ul>
-        </div>
-      </div>
+        </CardBody>
+      </Card>
     </div>
   );
 }

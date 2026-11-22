@@ -7,6 +7,8 @@ import { LEVEL_PASS_MARK } from "@/lib/scoring/exams";
 import { ReviewBanner } from "@/components/review-banner";
 import { RichText } from "@/components/rich-text";
 import { NotesBox } from "@/components/notes-box";
+import { LockedCard } from "@/components/locked-card";
+import { Card, CardBody, CardTitle } from "@/components/ui/card";
 import { startQuiz } from "./actions";
 import explanations from "@/content/explain.json";
 import links from "@/content/links.json";
@@ -40,29 +42,15 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
   const prev = topics[i - 1];
   const next = topics[i + 1];
 
+  const eyebrow = `Level ${topic.level.number}: ${topic.level.title} · Topic ${topic.position}`;
   const levelIndex = levels.findIndex((l) => l.id === topic.level.id);
   if (!levels[levelIndex]?.unlocked) {
     const previous = levels[levelIndex - 1];
     return (
-      <div className="card bg-base-100 shadow">
-        <div className="card-body p-4 sm:p-6 gap-3">
-          <p className="text-sm text-base-content/60">
-            Level {topic.level.number}: {topic.level.title} · Topic {topic.position}
-          </p>
-          <h1 className="text-2xl font-bold">
-            <RichText text={topic.title} />
-          </h1>
-          <div role="alert" className="alert">
-            <span>
-              Level {topic.level.number} is locked. Score {LEVEL_PASS_MARK}% or more on the Level {previous?.number} exam
-              to open it.
-            </span>
-          </div>
-          <Link href="/syllabus" className="btn btn-primary self-start">
-            Go to the syllabus
-          </Link>
-        </div>
-      </div>
+      <LockedCard eyebrow={eyebrow} title={<RichText text={topic.title} />} href="/syllabus" action="Go to the syllabus">
+        Level {topic.level.number} is locked. Score {LEVEL_PASS_MARK}% or more on the Level {previous?.number} exam to
+        open it.
+      </LockedCard>
     );
   }
 
@@ -70,48 +58,40 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
     // The first locked topic is the one after the last topic you passed.
     const blocker = topics[topics.findIndex((t) => !open.has(t.id)) - 1];
     return (
-      <div className="card bg-base-100 shadow">
-        <div className="card-body p-4 sm:p-6 gap-3">
-          <p className="text-sm text-base-content/60">
-            Level {topic.level.number}: {topic.level.title} · Topic {topic.position}
-          </p>
-          <h1 className="text-2xl font-bold">
-            <RichText text={topic.title} />
-          </h1>
-          <div role="alert" className="alert">
-            <span>
-              This topic is locked. Score {PASS_MARK}% or more on the <RichText text={blocker.title} /> quiz to open
-              the next topic
-              {best.has(blocker.id) ? ` (your best so far is ${best.get(blocker.id)}%)` : ""}.
-            </span>
-          </div>
-          <Link href={`/topic/${blocker.id}`} className="btn btn-primary self-start">
+      <LockedCard
+        eyebrow={eyebrow}
+        title={<RichText text={topic.title} />}
+        href={`/topic/${blocker.id}`}
+        action={
+          <>
             Go to <RichText text={blocker.title} />
-          </Link>
-        </div>
-      </div>
+          </>
+        }
+      >
+        This topic is locked. Score {PASS_MARK}% or more on the <RichText text={blocker.title} /> quiz to open the next
+        topic{best.has(blocker.id) ? ` (your best so far is ${best.get(blocker.id)}%)` : ""}.
+      </LockedCard>
     );
   }
 
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <p className="text-sm text-base-content/60">
-          Level {topic.level.number}: {topic.level.title} · Topic {topic.position}
-        </p>
+        <p className="text-sm text-base-content/60">{eyebrow}</p>
         <h1 className="text-2xl font-bold">
           <RichText text={topic.title} />
         </h1>
       </div>
 
+      {/* Its own colours, so not the shared Card: cn() cannot override bg-base-100. */}
       <div className="card bg-primary text-primary-content">
-        <div className="card-body p-4 sm:p-6">
+        <CardBody>
           <h2 className="font-semibold">Interview question</h2>
           <p className="text-lg">
             <RichText text={topicRes.data.interview_question} />
           </p>
           <p className="text-sm opacity-80">Answer it out loud, without notes, before you take the quiz.</p>
-        </div>
+        </CardBody>
       </div>
 
       <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -125,12 +105,12 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
         ))}
       </div>
 
-      <div className="card bg-base-100 shadow">
-        <div className="card-body p-4 sm:p-6">
-          <h2 className="card-title">My notes</h2>
+      <Card>
+        <CardBody>
+          <CardTitle>My notes</CardTitle>
           <NotesBox topicId={id} initial={noteRes.data?.body ?? ""} />
-        </div>
-      </div>
+        </CardBody>
+      </Card>
 
       {keyPoints.length > 0 && (
         // Closed by default, so you answer the interview question before peeking.

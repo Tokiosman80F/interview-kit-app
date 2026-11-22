@@ -5,6 +5,8 @@ import { codingProgress } from "@/lib/progress";
 import { PASS_MARK } from "@/lib/scoring/unlock";
 import type { TestCase } from "@/lib/runner/run";
 import { RichText } from "@/components/rich-text";
+import { LockedCard } from "@/components/locked-card";
+import { Card, CardBody } from "@/components/ui/card";
 import { CodingRunner } from "./coding-client";
 
 export default async function CodingPage({ params }: { params: Promise<{ id: string }> }) {
@@ -27,23 +29,18 @@ export default async function CodingPage({ params }: { params: Promise<{ id: str
   if (!open.has(id)) {
     const blocker = ladder[ladder.findIndex((p) => !open.has(p.id)) - 1];
     return (
-      <div className="card bg-base-100 shadow">
-        <div className="card-body p-4 sm:p-6 gap-3">
-          <h1 className="text-2xl font-bold">
-            <RichText text={q.title} />
-          </h1>
-          <div role="alert" className="alert">
-            <span>
-              This problem is locked. Pass at least {PASS_MARK}% of the tests on <RichText text={blocker.title} /> to
-              open the next problem
-              {best.has(blocker.id) ? ` (your best so far is ${best.get(blocker.id)}%)` : ""}.
-            </span>
-          </div>
-          <Link href={`/coding/${blocker.id}`} className="btn btn-primary self-start">
+      <LockedCard
+        title={<RichText text={q.title} />}
+        href={`/coding/${blocker.id}`}
+        action={
+          <>
             Go to <RichText text={blocker.title} />
-          </Link>
-        </div>
-      </div>
+          </>
+        }
+      >
+        This problem is locked. Pass at least {PASS_MARK}% of the tests on <RichText text={blocker.title} /> to open the
+        next problem{best.has(blocker.id) ? ` (your best so far is ${best.get(blocker.id)}%)` : ""}.
+      </LockedCard>
     );
   }
 
@@ -60,14 +57,14 @@ export default async function CodingPage({ params }: { params: Promise<{ id: str
           <RichText text={q.title} />
         </h1>
       </div>
-      <div className="card bg-base-100 shadow">
-        <div className="card-body p-4 sm:p-6">
+      <Card>
+        <CardBody>
           <p>
             <RichText text={q.prompt} />
           </p>
           <p className="text-sm text-base-content/60">No AI and no looking it up. You have {q.difficulty === "hard" ? 35 : 20} minutes. Run the tests as often as you like.</p>
-        </div>
-      </div>
+        </CardBody>
+      </Card>
 
       <CodingRunner
         questionId={id}

@@ -3,6 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { codingProgress } from "@/lib/progress";
 import { PASS_MARK } from "@/lib/scoring/unlock";
 import { RichText } from "@/components/rich-text";
+import { Card, CardBody } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/cn";
 
 export default async function CodingLadderPage() {
   const supabase = await createClient();
@@ -19,8 +22,8 @@ export default async function CodingLadderPage() {
           {PASS_MARK}% of a problem&apos;s tests to open the next one.
         </p>
       </div>
-      <div className="card bg-base-100 shadow">
-        <div className="card-body p-4 sm:p-6">
+      <Card>
+        <CardBody>
           <ul className="list">
             {ladder.map((p, n) => {
               const score = best.get(p.id);
@@ -28,7 +31,7 @@ export default async function CodingLadderPage() {
               return (
                 <li
                   key={p.id}
-                  className={`list-row items-center px-0 sm:px-4 ${p.id === nextUp?.id ? "bg-base-200" : ""}`}
+                  className={cn("list-row items-center px-0 sm:px-4", p.id === nextUp?.id && "bg-base-200")}
                 >
                   <span className="text-base-content/50 w-6">{n + 1}</span>
                   {unlocked ? (
@@ -42,21 +45,25 @@ export default async function CodingLadderPage() {
                   )}
                   <span className="text-right">
                     {!unlocked ? (
-                      <span className="badge badge-ghost whitespace-nowrap">Locked</span>
+                      <Badge>Locked</Badge>
                     ) : score === 100 ? (
-                      <span className="badge badge-success badge-outline">Solved</span>
+                      <Badge tone="success" outline>
+                        Solved
+                      </Badge>
                     ) : score !== undefined ? (
-                      <span className="badge badge-primary badge-outline whitespace-nowrap">Best {score}%</span>
+                      <Badge tone="primary" outline>
+                        Best {score}%
+                      </Badge>
                     ) : (
-                      <span className="badge badge-ghost whitespace-nowrap">{p.difficulty}</span>
+                      <Badge>{p.difficulty}</Badge>
                     )}
                   </span>
                 </li>
               );
             })}
           </ul>
-        </div>
-      </div>
+        </CardBody>
+      </Card>
     </div>
   );
 }

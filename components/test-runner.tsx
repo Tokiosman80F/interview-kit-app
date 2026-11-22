@@ -4,6 +4,9 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { saveAnswer, finishTest } from "@/app/test/[id]/actions";
 import { CodeBlock, RichText } from "@/components/rich-text";
 import { CodeEditor } from "@/components/code-editor";
+import { Card, CardBody } from "@/components/ui/card";
+import { Notice } from "@/components/ui/notice";
+import { Badge } from "@/components/ui/badge";
 import type { QuizQuestion } from "@/lib/data";
 import { DONT_KNOW } from "@/lib/scoring/grade";
 import { runInWorker } from "@/lib/runner/client";
@@ -144,18 +147,18 @@ export function TestRunner({
         </h1>
         <span className="flex items-center gap-2 text-sm text-base-content/60 whitespace-nowrap">
           {left !== null && (
-            <span className={`badge font-mono ${left < 5 * 60 * 1000 ? "badge-warning" : "badge-ghost"}`}>
+            <Badge tone={left < 5 * 60 * 1000 ? "warning" : "ghost"} className="font-mono">
               {clock(left)}
-            </span>
+            </Badge>
           )}
           {index + 1} / {questions.length}
         </span>
       </div>
       <progress className="progress progress-primary w-full" value={index + 1} max={questions.length} />
 
-      <div className="card bg-base-100 shadow">
-        <div className="card-body p-4 sm:p-6 gap-4">
-          <span className="badge badge-ghost">{q.difficulty}</span>
+      <Card>
+        <CardBody className="gap-4">
+          <Badge>{q.difficulty}</Badge>
           {q.type === "output" ? (
             <>
               <p className="font-semibold">What does this code print?</p>
@@ -256,14 +259,10 @@ export function TestRunner({
               </div>
             </>
           )}
-        </div>
-      </div>
+        </CardBody>
+      </Card>
 
-      {error && (
-        <div role="alert" className="alert alert-error">
-          {error}
-        </div>
-      )}
+      {error && <Notice tone="error">{error}</Notice>}
 
       <div className="flex justify-between gap-2">
         <button className="btn" disabled={index === 0 || pending} onClick={() => go(index - 1)}>

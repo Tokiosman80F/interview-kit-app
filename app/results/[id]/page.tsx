@@ -10,6 +10,12 @@ import { CodingResult } from "./coding-result";
 import { LEVEL_PASS_MARK } from "@/lib/scoring/exams";
 import { formatWhen } from "@/components/review-banner";
 import type { TestResult } from "@/lib/runner/run";
+import { cn } from "@/lib/cn";
+import { Card, CardBody } from "@/components/ui/card";
+import { Notice } from "@/components/ui/notice";
+import { Badge } from "@/components/ui/badge";
+import { BulletList } from "@/components/ui/bullet-list";
+import { Callout } from "@/components/ui/callout";
 
 export default async function ResultsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -37,8 +43,8 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="card bg-base-100 shadow">
-        <div className="card-body p-4 sm:p-6 items-center text-center">
+      <Card>
+        <CardBody className="items-center text-center">
           <p className="text-base-content/60">
             {test.kind === "review" ? (
               "Review exam"
@@ -59,7 +65,7 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
             {right} of {items.length} correct{waiting && " so far"}
           </p>
           {test.kind === "level_exam" && !waiting && (
-            <p className={`font-semibold ${passed ? "text-success" : "text-error"}`}>
+            <p className={cn("font-semibold", passed ? "text-success" : "text-error")}>
               {passed
                 ? nextLevel
                   ? `Passed. Level ${nextLevel.number} is now open.`
@@ -67,34 +73,30 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
                 : `Not passed yet: you need ${LEVEL_PASS_MARK}%.${levelState?.retakeAt ? ` You can retake it from ${formatWhen(levelState.retakeAt)}.` : ""}`}
             </p>
           )}
-        </div>
-      </div>
+        </CardBody>
+      </Card>
       {waiting && (
-        <div role="alert" className="alert alert-warning">
+        <Notice tone="warning">
           The AI graders are busy or unavailable, so your written answers are not graded yet. Open this page again
           later and they will be graded then.
-        </div>
+        </Notice>
       )}
 
       {items.map(({ question: q, response, is_correct, score, feedback, graded_by }, n) => (
-        <div key={q.id} className="card bg-base-100 shadow">
-          <div className="card-body p-4 sm:p-6 gap-2">
+        <Card key={q.id}>
+          <CardBody className="gap-2">
             <div className="flex justify-between gap-2">
               <span className="text-sm text-base-content/60">
                 {n + 1}. {q.difficulty}
               </span>
               {q.type === "written" ? (
-                <span className={`badge ${score === null ? "badge-ghost" : is_correct ? "badge-success" : "badge-error"}`}>
+                <Badge tone={score === null ? "ghost" : is_correct ? "success" : "error"}>
                   {score === null ? "Waiting" : `${Math.round(Number(score) * 10)}/10`}
-                </span>
+                </Badge>
               ) : q.type === "coding" ? (
-                <span className={`badge ${is_correct ? "badge-success" : "badge-error"}`}>
-                  {Math.round(Number(score ?? 0) * 100)}% of tests
-                </span>
+                <Badge tone={is_correct ? "success" : "error"}>{Math.round(Number(score ?? 0) * 100)}% of tests</Badge>
               ) : (
-                <span className={`badge ${is_correct ? "badge-success" : "badge-error"}`}>
-                  {is_correct ? "Right" : "Wrong"}
-                </span>
+                <Badge tone={is_correct ? "success" : "error"}>{is_correct ? "Right" : "Wrong"}</Badge>
               )}
             </div>
             {q.type === "coding" ? (
@@ -124,15 +126,15 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
                   <RichText text={q.correct_answer ?? ""} />
                 </p>
                 {q.explanation && (
-                  <p className="bg-base-200 rounded-box p-3">
+                  <Callout>
                     <span className="font-semibold">Why: </span>
                     <RichText text={q.explanation} />
-                  </p>
+                  </Callout>
                 )}
               </>
             )}
-          </div>
-        </div>
+          </CardBody>
+        </Card>
       ))}
 
       <div className="flex flex-wrap justify-between gap-2">
@@ -160,30 +162,16 @@ export default async function ResultsPage({ params }: { params: Promise<{ id: st
 }
 
 function WrittenFeedbackView({ feedback, gradedBy }: { feedback: NonNullable<TestItem["feedback"]>; gradedBy: string | null }) {
-  const list = (title: string, items: string[], tone: string) =>
-    items.length > 0 && (
-      <div>
-        <p className={`font-semibold ${tone}`}>{title}</p>
-        <ul className="list-disc pl-5">
-          {items.map((t) => (
-            <li key={t}>
-              <RichText text={t} />
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
   return (
     <div className="flex flex-col gap-3">
-      {list("Key points covered", feedback.covered, "text-success")}
-      {list("Key points missed", feedback.missed, "text-error")}
-      {list("Mistakes", feedback.mistakes, "text-warning")}
-      <div className="bg-base-200 rounded-box p-3">
-        <p className="font-semibold">Model answer</p>
+      <BulletList title="Key points covered" items={feedback.covered} tone="success" />
+      <BulletList title="Key points missed" items={feedback.missed} tone="error" />
+      <BulletList title="Mistakes" items={feedback.mistakes} tone="warning" />
+      <Callout title="Model answer">
         <p>
           <RichText text={feedback.model_answer} />
         </p>
-      </div>
+      </Callout>
       {gradedBy && gradedBy !== "app" && (
         <p className="text-xs text-base-content/50">Graded by {gradedBy === "gemini" ? "Gemini" : "Groq"}</p>
       )}
@@ -219,8 +207,7 @@ function CodingAnswerView({ title, code, feedback, waiting }: { title: string; c
         </ul>
       )}
       {review ? (
-        <div className="bg-base-200 rounded-box p-3 flex flex-col gap-2">
-          <p className="font-semibold">AI review</p>
+        <Callout title="AI review" className="flex flex-col gap-2">
           {[...review.mistakes, ...review.edge_cases].map((m) => (
             <p key={m}>
               • <RichText text={m} />
@@ -232,7 +219,7 @@ function CodingAnswerView({ title, code, feedback, waiting }: { title: string; c
               <RichText text={review.suggestion} />
             </p>
           )}
-        </div>
+        </Callout>
       ) : (
         waiting && <p className="text-base-content/60">The AI review will appear once grading is done.</p>
       )}

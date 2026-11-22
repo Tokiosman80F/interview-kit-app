@@ -1,10 +1,12 @@
+import { Card, CardBody, CardTitle } from "@/components/ui/card";
+
 export default function MistakesPage() {
   return (
-    <div className="card bg-base-100 shadow">
-      <div className="card-body">
-        <h1 className="card-title">Mistakes</h1>
+    <Card>
+      <CardBody>
+        <CardTitle as="h1">Mistakes</CardTitle>
         <p>Coming in a later version.</p>
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 }

@@ -43,6 +43,7 @@ Do not add Redux, Prisma, an ORM, a component library, or a state library. Ask b
 ```
 app/                     routes (see Screens)
 components/              small UI pieces, daisyUI based
+  ui/                    shared parts like shadcn: Card, CardBody, CardTitle, Badge, Notice, BulletList, Callout
 lib/
   supabase/              server and browser clients
   scoring/               pure functions: scores, pass rules, weak topics, streak, day type
@@ -190,5 +191,6 @@ npm run check-coding   # run every coding solution against its tests
 - Write tests for everything in `lib/scoring`, `lib/selection` and the grading response parser.
 - Prefer server components and server actions; use client components only where interaction needs them (test page, editor, notes autosave).
 - Keep code plain and readable. No clever abstractions for a one-user app.
+- Repeated UI uses the parts in `components/ui/`, and conditional classes use `cn()` from `lib/cn.ts` instead of template strings. Tone props map to full daisyUI class names, because Tailwind only keeps classes it sees written in full.
 - Explain decisions to the owner in plain, short English. They are learning, so say what you did and why in a few sentences, without jargon.
 - If a request conflicts with the one rule or the cut list in the spec, say so before building it.
