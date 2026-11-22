@@ -190,7 +190,7 @@ Goal: the full exam system, with unlocking and the 3-day review.
 - [x] Timer on the test page for exams (40 minutes for level, 30 for review). When time runs out, the test is finished with the answers given.
 - [x] Level exam button on the syllabus page when available. Locked levels show a lock and what is needed to unlock them.
 - [x] Review exam: a clear banner when due. While overdue, starting a topic quiz is blocked with a message and a button to the review exam.
-- [ ] Version 4 check: lint, test, build, and an owner checklist (use a temporary date override in development to test the 3-day and 24-hour rules, then remove it).
+- [x] Version 4 check: lint, test, build, and an owner checklist (use a temporary date override in development to test the 3-day and 24-hour rules, then remove it).
 
 **STOP. Version 4 is done. Wait for the owner.**
 
